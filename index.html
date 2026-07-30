@@ -234,8 +234,10 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 
 .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
 .gterm { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
-.gterm code { display: block; margin-bottom: 5px; background: none; padding: 0; font-weight: 700; color: var(--text); }
+.gterm .gterm-title { display: block; margin-bottom: 4px; font-weight: 700; color: var(--text); font-size: 0.98rem; }
 .gterm span { font-size: 0.85rem; color: var(--text-2); }
+.gterm .gterm-code { display: block; margin-top: 8px; font-size: 0.72rem; color: var(--muted); }
+.gterm .gterm-code code { background: none; padding: 0; }
 .gterm.in { border-left: 3px solid var(--good); }
 .gterm.out { border-left: 3px solid var(--bad); }
 
@@ -368,7 +370,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </div>
 
       <div class="sub"><h3>Onboarding &amp; Sign Up</h3></div>
-      <p>First launch shows three full-bleed slides — shopping, buying together, and custom orders — as a one-time introduction. Once seen, they never show again; this is tracked by a small file saved on the device itself, not a server setting, specifically so it can't silently reset.</p>
+      <p>First launch shows three full-screen slides — shopping, buying together, and custom orders — as a one-time introduction. Once you've seen them, they never show again.</p>
       <p>Sign-up is a single form with <b>no role picker</b> — name, phone, email, password. Every new account is a buyer. There's one optional field, collapsed by default: <b>"Add referral code."</b> Typing a code checks it live against two completely different systems at once and shows an inline badge before you even submit:</p>
       <div class="table-wrap"><table>
         <tr><th>What you typed matches…</th><th>Badge shown</th><th>What actually happens</th></tr>
@@ -399,7 +401,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </table></div>
       <div class="callout">
         <div class="tag">What you'll see</div>
-        <p>Semantic search silently falls back to plain keyword search the instant it can't run — most commonly when its underlying OpenAI quota is exhausted. Nothing errors, nothing looks broken; search just quietly becomes literal instead of meaning-based for a while. Once a search phrase has been converted to an embedding, it's cached, so scrolling for "load more" results never repeats that lookup.</p>
+        <p>The "understands meaning" search quietly switches back to plain keyword search whenever it can't run — most often when the AI service behind it has hit its usage limit for the moment. Nothing looks broken and no error appears; search just becomes literal for a while instead of meaning-based. And once the app has looked up what a phrase means, it remembers the answer, so scrolling down for more results never has to ask twice.</p>
       </div>
 
       <div class="sub"><h3>Reviews</h3></div>
@@ -463,8 +465,8 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <tr><td>Initiator cancels</td><td>Every contributor is refunded <b>in full</b></td></tr>
       </table></div>
       <div class="callout rule">
-        <div class="tag">Anti-duplicate rule</div>
-        <p>Contributing twice in quick succession is blocked for two minutes client-side before it even reaches payment. Paystack contributions are additionally de-duplicated by their own payment reference rather than by amount-and-timing — an earlier version blocked two genuinely separate, identically-priced contributions made minutes apart, which was wrong, so it now keys off the real payment reference instead.</p>
+        <div class="tag">Can't accidentally pay twice</div>
+        <p>If you tap "Contribute" twice in a row by mistake, the second tap is blocked for two minutes so you can't accidentally pay into the same pool twice. It's still perfectly fine to make two genuinely separate contributions of the same amount a few minutes apart — the app is careful to only block true accidental double-taps, not real repeat support.</p>
       </div>
       <p><b>Cashback</b> goes only to the pool's <b>initiator</b>, never to contributors — a reward for organizing the pool, not for joining one. It's calculated as a percentage of what the initiator themselves put in (not the whole pool), at the platform's current live settings:</p>
       <div class="table-wrap"><table>
@@ -521,12 +523,12 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <li><b>Customer posts a request</b> — title, description, reference photos, and their own bidding deadline (anywhere from 6 hours to 30 days out; 2 days is the suggested default)</li>
         <li><b>Artisans browse and bid</b> — any merchant meeting the request's own eligibility gates, if it has any</li>
         <li><b>Back-and-forth</b> — the customer can counter an offer; the artisan can accept the counter, or decline it and let their original bid stand</li>
-        <li><b>Customer accepts a bid</b> — an order is created, referenced as <code>CUSTOMFIT-{requestId}-{bidId}</code></li>
+        <li><b>Customer accepts a bid</b> — an order is created, with its own order number so it's easy to look up later (something like <code>CUSTOMFIT-482-19</code>)</li>
       </div>
 
-      <p>A customer can optionally lock a request down with up to four independent gates — an artisan failing any one of them simply can't bid at all:</p>
+      <p>A customer can optionally lock a request down with up to four requirements — an artisan who doesn't meet one of them simply can't bid at all:</p>
       <div class="table-wrap"><table>
-        <tr><th>Gate</th><th>What it checks</th></tr>
+        <tr><th>Requirement</th><th>What it checks</th></tr>
         <tr><td>Location</td><td>The artisan's store location must match the request's state or city</td></tr>
         <tr><td>Sales history</td><td>A minimum number of completed, paid orders</td></tr>
         <tr><td>Rating</td><td>A minimum average star rating across all their products</td></tr>
@@ -563,16 +565,17 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 
       <div class="sub"><h3>Internal Logistics — Riders &amp; Companies Bidding</h3></div>
       <p>Independent riders and logistics companies apply and are approved by an admin before they can carry anything. A rider is bound to a single coverage state; a company, running a fleet, can cover several. When a merchant marks their side of an order "Ready for Pickup," a bidding round opens to nearby riders and companies, and the buyer watches offers come in live — price, rating, distance — choosing whichever one they like and paying the delivery fee <b>separately</b> from the product price itself (same wallet/Paystack flow, same PIN confirmation as any other payment).</p>
+      <p>A delivery moves through six plain stages, each one requiring a real action from a real person before it can advance to the next:</p>
       <div class="pill-seq">
-        <span class="pill">open</span><span class="arrow">→</span><span class="pill">assigned</span><span class="arrow">→</span><span class="pill">awaiting_pickup_confirm</span><span class="arrow">→</span><span class="pill">picked_up</span><span class="arrow">→</span><span class="pill">delivered</span><span class="arrow">→</span><span class="pill on">confirmed</span>
+        <span class="pill">Bidding Open</span><span class="arrow">→</span><span class="pill">Rider Assigned</span><span class="arrow">→</span><span class="pill">Rider at the Store</span><span class="arrow">→</span><span class="pill">Picked Up</span><span class="arrow">→</span><span class="pill">Delivered</span><span class="arrow">→</span><span class="pill on">Confirmed by Buyer</span>
       </div>
-      <p>The rider marks their own arrival at the store; the merchant then confirms the physical handoff, which is what actually advances the delivery to "picked up." The rider marks arrival at the buyer; only the buyer's own confirmation closes the loop and releases the rider's earnings. The buyer can then leave a 1–5 star rating, which feeds the average shown on that rider's future bids.</p>
+      <p>The rider marks their own arrival at the store; the merchant then confirms the physical handoff, which is what actually moves things to "Picked Up." The rider marks arrival at the buyer; only the buyer's own confirmation closes the loop and releases the rider's earnings. The buyer can then leave a 1–5 star rating, which feeds the average shown on that rider's future bids.</p>
 
       <div class="sub"><h3>Eziza — the External Logistics Partner</h3></div>
-      <p>ZeeFashion can route a delivery to <b>Eziza</b>, a fully separate logistics company with its own app and its own riders, instead of using its own internal marketplace. All communication with Eziza happens through a secure server-side connection — never directly from a phone — so no delivery-partner credentials are ever exposed on a device. To a buyer or merchant, the experience is built to look and feel <b>identical</b> either way: the same live map, the same incoming-bids list, the same six-stage status sequence above — it's simply a different set of riders bidding behind the scenes.</p>
+      <p>ZeeFashion can hand a delivery off to <b>Eziza</b>, a fully separate logistics company with its own app and its own riders, instead of using its own internal marketplace. This handoff happens quietly behind the scenes, arranged directly between ZeeFashion and Eziza — nothing about it is visible or exposed on the buyer's or merchant's phone. To a buyer or merchant, the experience is built to look and feel <b>identical</b> either way: the same live map, the same incoming-bids list, the same six stages above — it's simply a different set of riders bidding behind the scenes.</p>
 
       <div class="sub"><h3>Instant Courier (External Carriers)</h3></div>
-      <p>For deliveries routed through Eziza, a buyer doesn't have to wait for a rider to bid at all. They can request real quotes from courier partners (DHL, GIG, and others) and book + pay for pickup immediately — shown as "Instant Courier Booked" rather than a rider assignment. This channel is built and shipped, but full live testing is still waiting on the courier partner's own account approval, so its real-world rate accuracy hasn't been independently confirmed end to end yet.</p>
+      <p>For deliveries handed off to Eziza, a buyer doesn't have to wait for a rider to bid at all. They can request real quotes from courier partners (DHL, GIG, and others) and book + pay for pickup immediately — shown as "Instant Courier Booked" rather than a rider assignment. This option is built and ready, but it's still waiting on the courier partner's own approval before it can be tested against real orders, so its pricing hasn't been proven out with a live delivery yet.</p>
     </section>
 
     <!-- ============================================================ -->
@@ -591,26 +594,25 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </table></div>
 
       <div class="sub"><h3>Topping Up &amp; Paying</h3></div>
-      <p>Topping up opens an embedded Paystack checkout inside the app. Crucially, it isn't the app itself that credits the wallet on a successful payment — a server-side webhook from Paystack is what actually does that, so the balance only ever moves on a payment ZeeFashion's own servers have independently confirmed.</p>
+      <p>Topping up opens a Paystack payment screen right inside the app. Your balance doesn't go up just because the checkout screen says "success," though — Paystack separately tells ZeeFashion's own systems that the payment really went through, and it's that confirmation, not the checkout screen, that actually adds the money to your balance.</p>
       <p>Confirming an actual purchase asks for your PIN, or, if you've turned it on, your device's fingerprint or face — either is accepted as proof it's really you.</p>
 
       <div class="sub"><h3>Reading Your Transaction History</h3></div>
-      <p>Every entry carries a type that says exactly what it was:</p>
+      <p>Every entry in your history has a plain description telling you exactly what happened, plus a short internal label most people never need to think about. Here's what each label actually means, in case you ever see one and wonder:</p>
       <div class="glossary">
-        <div class="gterm in"><code>credit / deposit</code><span>Money added — a top-up or a direct credit</span></div>
-        <div class="gterm in"><code>gift_received</code><span>A fan tipped you (merchants)</span></div>
-        <div class="gterm in"><code>refunded / stb_refund / pool_refund</code><span>Money returned from a cancelled order, Save to Buy goal, or Buy Together pool</span></div>
-        <div class="gterm out"><code>debit / withdrawal</code><span>Money taken out, or a payout you requested</span></div>
-        <div class="gterm out"><code>gift_sent</code><span>You tipped a merchant</span></div>
-        <div class="gterm out"><code>payout</code><span>A merchant/officer/influencer payout that was actually paid</span></div>
-        <div class="gterm out"><code>pool_contribution</code><span>You paid into someone's Buy Together pool</span></div>
-        <div class="gterm out"><code>bid_fee</code><span>The ₦500 Custom Fit bid fee (artisans)</span></div>
-        <div class="gterm out"><code>custom_purchase</code><span>You paid for an accepted Custom Fit order</span></div>
+        <div class="gterm in"><span class="gterm-title">Money added</span><span>A top-up, or a direct credit to your balance</span><span class="gterm-code"><code>credit · deposit</code></span></div>
+        <div class="gterm in"><span class="gterm-title">A fan tipped you</span><span>Gift income, for merchants</span><span class="gterm-code"><code>gift_received</code></span></div>
+        <div class="gterm in"><span class="gterm-title">Money returned to you</span><span>From a cancelled order, a Save to Buy goal, or a Buy Together pool</span><span class="gterm-code"><code>refunded · stb_refund · pool_refund</code></span></div>
+        <div class="gterm out"><span class="gterm-title">Money taken out</span><span>A withdrawal, or a payout you requested</span><span class="gterm-code"><code>debit · withdrawal</code></span></div>
+        <div class="gterm out"><span class="gterm-title">You tipped a merchant</span><span>Sending a gift from a product or store page</span><span class="gterm-code"><code>gift_sent</code></span></div>
+        <div class="gterm out"><span class="gterm-title">A payout was actually paid</span><span>To a merchant, officer, or influencer</span><span class="gterm-code"><code>payout</code></span></div>
+        <div class="gterm out"><span class="gterm-title">You joined a pool</span><span>Paid into someone's Buy Together pool</span><span class="gterm-code"><code>pool_contribution</code></span></div>
+        <div class="gterm out"><span class="gterm-title">Custom Fit bid fee</span><span>The ₦500 fee artisans pay to place a bid</span><span class="gterm-code"><code>bid_fee</code></span></div>
+        <div class="gterm out"><span class="gterm-title">Custom Fit purchase</span><span>Paid for an accepted Custom Fit order</span><span class="gterm-code"><code>custom_purchase</code></span></div>
       </div>
-      <p>Each row also carries a plain-language description and a reference code — that's what actually shows up in the transaction list, not the raw type name.</p>
 
       <div class="sub"><h3>Gifts — Tipping a Merchant</h3></div>
-      <p>Gifting only ever flows <b>buyer → merchant</b>, sent straight from a product page or a store's profile — there's no buyer-to-buyer gifting. Each gift item has its own price and its own split between the merchant and the platform, set independently per gift rather than one global rate. Tapping a gift reserves its price against your balance <i>immediately</i>, client-side, before the server even responds — so rapid double-tapping can never spend more than you actually have. The merchant is notified by push with your name, the gift, and any message you attached, and sees a running gift feed and total count on their own dashboard.</p>
+      <p>Gifting only ever flows <b>buyer → merchant</b>, sent straight from a product page or a store's profile — there's no buyer-to-buyer gifting. Each gift item has its own price and its own split between the merchant and ZeeFashion, set individually per gift rather than one flat rate for all of them. The moment you tap a gift, its price is set aside from your balance right away — even before the app has finished confirming the payment — so tapping twice by accident can never spend more than you actually have. The merchant is notified straight away with your name, the gift, and any message you attached, and sees a running feed and total count of gifts on their own dashboard.</p>
     </section>
 
     <!-- ============================================================ -->
@@ -621,8 +623,8 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <p class="dek">What a merchant actually pays for, and what really happens when they outgrow their plan.</p>
       </div>
 
-      <p>Plans — Starter and up — are entirely content managed by an admin: name, monthly price, a separate annual price, an order cap, and a commission percentage. Nothing about a plan is hard-coded into the app, so a new tier can be introduced without an app update.</p>
-      <p>Two things genuinely differ between tiers, in the actual enforcement code rather than just marketing copy:</p>
+      <p>Plans — Starter and up — are set up and changed entirely by an admin: name, monthly price, a separate annual price, an order cap, and a commission percentage. None of this is fixed permanently into the app, so a new plan can be introduced at any time without updating the app itself.</p>
+      <p>Two things actually differ between tiers, not just in name:</p>
       <div class="table-wrap"><table>
         <tr><th>Lever</th><th>What it means in practice</th></tr>
         <tr><td>Monthly order cap</td><td>How many orders a merchant can take before hitting their limit. The top tier implements "unlimited" simply as a cap of zero, meaning no cap at all.</td></tr>
@@ -646,7 +648,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </div>
 
       <div class="sub"><h3>Peer Referrals — Automatic for Everyone</h3></div>
-      <p>Every account gets its own referral code (format <code>ZEE-XXXXXX</code>) the moment it's created — there's nothing to set up or apply for. Share it, and you earn a flat, admin-set ₦ amount every time the person you referred transacts — live settings, right now:</p>
+      <p>Every account gets its own referral code — something like <code>ZEE-7F3K9A</code> — the moment it's created, with nothing to set up or apply for. Share it, and you earn a flat ₦ amount every time the person you referred does something that counts. Live settings, right now:</p>
       <div class="table-wrap"><table>
         <tr><th>Setting</th><th>Live value</th></tr>
         <tr><td>You earn, per order, when your referral buys something as a shopper</td><td class="num">₦200</td></tr>
@@ -678,7 +680,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       <p>An order where a platform-funded coupon was used is deliberately excluded from this calculation entirely, so an officer is never paid a commission on a sale the platform already subsidized.</p>
 
       <div class="sub"><h3>Coupons</h3></div>
-      <p>Two separate flavours exist, sharing one `coupons` table:</p>
+      <p>Two separate kinds of coupon exist, working the same way at checkout but created very differently:</p>
       <div class="two-col">
         <div><p><b>Merchant coupons</b> — created by a merchant for their own products (percentage or flat ₦ off, minimum order, usage cap, optional expiry, optionally scoped to specific products). The merchant always covers <b>100%</b> of their own coupon's discount.</p></div>
         <div><p><b>Platform coupons</b> — created by an admin, aimable at everyone, specific products, specific merchants, or specific customers, and configurable to split the discount's cost between the platform and the affected merchant.</p></div>
@@ -687,7 +689,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 
       <div class="sub"><h3>Influencers</h3></div>
       <p>Anyone with at least <b>100 followers</b> on a supported platform can apply; an admin approves or rejects the application. Approval alone doesn't make an influencer's code work everywhere — it only activates for a specific merchant once <i>that merchant</i> has explicitly authorized that influencer (optionally limited to specific products), and only if the merchant allows influencer promotion at all.</p>
-      <p>Commission and customer-discount rates cascade through three levels, in order: a merchant-specific rate if one was ever set for that pairing, otherwise the influencer's own personal rate, otherwise their tier's plain default. Earnings sit as "pending" after each sale, and rather than choosing an amount to withdraw, an influencer requests payment of everything owed at once.</p>
+      <p>The commission an influencer earns, and the discount their code gives shoppers, is decided by whichever of these has been set, checked in this order: a special rate for that one merchant, if one was ever agreed — otherwise the influencer's own personal rate — otherwise just the plain default rate for their tier. Earnings sit as "pending" after each sale, and rather than choosing an amount to withdraw, an influencer requests payment of everything owed at once.</p>
     </section>
 
     <!-- ============================================================ -->
@@ -721,7 +723,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </div>
 
       <div class="sub"><h3>Disputes</h3></div>
-      <p>Either side of an order — buyer or merchant — can raise a formal dispute, choosing from seven categories: <i>Not as Described, Damaged/Defective, Not Delivered, Wrong Item, Refund Not Processed, Late Delivery,</i> or <i>Other.</i> A dispute moves from <span class="pill">open</span> to <span class="pill">under_review</span> once an admin steps in and privately asks the other side to respond, then closes as <span class="pill on">resolved</span> or <span class="pill">rejected</span>.</p>
+      <p>Either side of an order — buyer or merchant — can raise a formal dispute, choosing from seven categories: <i>Not as Described, Damaged/Defective, Not Delivered, Wrong Item, Refund Not Processed, Late Delivery,</i> or <i>Other.</i> A dispute starts as <span class="pill">Just Opened</span>, moves to <span class="pill">Admin Reviewing</span> once an admin steps in and privately asks the other side to respond, then closes as either <span class="pill on">Resolved</span> or <span class="pill">Rejected</span>.</p>
       <p>Evidence stays private the whole way through — each party can only see their own submission, and only the admin ever sees both sides. There are deliberately only three possible outcomes, to keep the maths simple and consistent:</p>
       <div class="table-wrap"><table>
         <tr><th>Outcome</th><th>What actually happens</th></tr>
@@ -756,7 +758,7 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <div class="admin-row"><div class="name">Categories &amp; Products</div><div class="desc">Category structure and the full product catalog, viewed platform-wide.</div></div>
         <div class="admin-row"><div class="name">Colors</div><div class="desc">The shared colour list/tag system used across product variants.</div></div>
         <div class="admin-row"><div class="name">Coupons (Platform)</div><div class="desc">Admin-created, platform-wide coupons — distinct from the coupons merchants create for themselves in-app.</div></div>
-        <div class="admin-row"><div class="name">Subscriptions</div><div class="desc">Full plan CRUD — name, monthly price, separate annual price, order caps, commission rate — and manually assigning or overriding any merchant's plan.</div></div>
+        <div class="admin-row"><div class="name">Subscriptions</div><div class="desc">Create, edit, and manage every plan — name, monthly price, separate annual price, order caps, commission rate — and manually assign or override any merchant's plan.</div></div>
         <div class="admin-row"><div class="name">Seller Requests</div><div class="desc">Approve or reject buyer-to-merchant applications; a rejection requires a written reason.</div></div>
         <div class="admin-row"><div class="name">Sliders</div><div class="desc">Home-page promotional/ad image management.</div></div>
         <div class="admin-row"><div class="name">Influencers</div><div class="desc">Approve or reject influencer applications; manage codes and commission tiers.</div></div>
@@ -772,11 +774,11 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <div class="admin-row"><div class="name">Feature Services</div><div class="desc">The master switchboard — Buy Together, Save to Buy, Combo Bundles, Custom Fit (including whether its tab even shows in the app), Gifting, Wishlist, Logistics, and the Leaderboard can each be switched on or off platform-wide from this one page, alongside cashback and Custom Fit fee settings.</div></div>
       </div>
 
-      <p>Admin identity is a simple flag on a profile (<code>admin_status = true</code>) — there's no separate admin login system. The panel itself runs entirely on a public, read-limited key in the browser rather than a privileged server key, relying on database-level rules to keep sensitive tables readable only in the ways the panel actually needs.</p>
+      <p>Being an admin is simply a switch flipped on someone's ordinary account — there's no separate admin login system to manage. And even though the panel runs in an ordinary web browser rather than through a specially locked-down system, it's built so it can only ever see or change exactly what an admin is meant to touch, nothing more.</p>
     </section>
 
     <footer class="colophon">
-      <p>This reference describes the platform as its own code actually behaves, assembled directly from the controllers, database functions, and admin screens that run it — not from marketing copy or the original feature spec. Where a figure is admin-configurable (bid fees, referral amounts, commission splits, badge thresholds), the number shown is the current default rather than a fixed constant, and can be changed from the admin panel at any time.</p>
+      <p>This reference describes ZeeFashion as it actually behaves today, checked directly against the app and the admin panel — not against marketing copy or an old feature list. Where a figure can be changed by an admin (bid fees, referral amounts, commission splits, badge thresholds), the number shown is today's setting, not a fixed rule — an admin can adjust any of them at any time.</p>
     </footer>
 
   </main>
