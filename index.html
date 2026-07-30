@@ -406,7 +406,18 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       <p>Buyers rate and review products they've bought. Two things go beyond a plain star rating: merchants can <b>publicly reply</b> to any review on their own product, and other shoppers can mark a review "Helpful," with a running count shown next to it.</p>
 
       <div class="sub"><h3>Wishlist &amp; Gifting a Wishlist Item</h3></div>
-      <p>A shopper builds a collection of saved products and can share it via a public link. Anyone with that link can buy an item <i>for</i> the list's owner. The twist: the resulting cashback credit goes to the <b>list owner</b>, not to the friend who actually paid — buying someone a gift also hands them a small reward for having wanted it.</p>
+      <p>A shopper builds a collection of saved products and can share it via a public link. Anyone with that link can buy an item <i>for</i> the list's owner. The twist: the resulting cashback credit goes to the <b>list owner</b>, not to the friend who actually paid — buying someone a gift also hands them a small reward for having wanted it. The rate structure mirrors Buy Together's exactly, at these live settings:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Setting</th><th>Live value</th></tr>
+        <tr><td>Standard rate</td><td class="num">5%</td></tr>
+        <tr><td>New-recipient rate (your first time ever receiving a wishlist gift)</td><td class="num">10%</td></tr>
+        <tr><td>Minimum purchase to qualify</td><td class="num">₦100</td></tr>
+        <tr><td>Cap — same commission-share ceiling as Buy Together</td><td class="num">60%</td></tr>
+      </table></div>
+      <div class="callout">
+        <div class="tag">Worked example</div>
+        <p>A friend buys you a ₦4,000 bag from your public wishlist. At the standard 5% rate that's ₦200 — but here the cap actually bites: the platform's own commission on a ₦4,000 sale (at a typical 4.5% rate) is only ₦180, and 60% of that is ₦108. So instead of ₦200, you receive <b>₦108</b>, capped down to protect the platform's own margin on a small sale. On a bigger gift the cap matters much less — see the Buy Together example above, where it doesn't bind at all.</p>
+      </div>
       <p>Every product detail view also quietly increments a view counter, visible to the merchant as basic interest data on their own listing.</p>
     </section>
 
@@ -455,7 +466,19 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <div class="tag">Anti-duplicate rule</div>
         <p>Contributing twice in quick succession is blocked for two minutes client-side before it even reaches payment. Paystack contributions are additionally de-duplicated by their own payment reference rather than by amount-and-timing — an earlier version blocked two genuinely separate, identically-priced contributions made minutes apart, which was wrong, so it now keys off the real payment reference instead.</p>
       </div>
-      <p><b>Cashback</b> goes only to the pool's <b>initiator</b>, never to contributors — a reward for organizing the pool, not for joining one. It's admin-configured as either a flat ₦ amount or a percentage of the contribution, with a separate (usually higher) rate for someone's very first pool, and it can never exceed 60% of the platform's own commission on that order — the platform always keeps at least some of its own cut. Cashback expires <b>14 days</b> after being earned unless converted into a one-time discount coupon first, and that coupon then expires <b>24 hours</b> after conversion.</p>
+      <p><b>Cashback</b> goes only to the pool's <b>initiator</b>, never to contributors — a reward for organizing the pool, not for joining one. It's calculated as a percentage of what the initiator themselves put in (not the whole pool), at the platform's current live settings:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Setting</th><th>Live value</th></tr>
+        <tr><td>Standard rate (returning initiators)</td><td class="num">5%</td></tr>
+        <tr><td>New-initiator rate (your very first pool)</td><td class="num">10%</td></tr>
+        <tr><td>Minimum contribution to qualify</td><td class="num">₦1,000</td></tr>
+        <tr><td>Cap — cashback can never exceed this share of the platform's own commission on the order</td><td class="num">60%</td></tr>
+      </table></div>
+      <div class="callout">
+        <div class="tag">Worked example</div>
+        <p>You start a pool for a ₦20,000 dress and personally contribute ₦5,000 of it (friends cover the other ₦15,000). At the standard 5% rate, you'd earn <b>₦250</b> cashback. If this is your very first pool, the 10% new-initiator rate applies instead — <b>₦500</b>. Either way it's checked against the cap: the platform's own commission on a ₦20,000 order (at a typical 4.5% merchant rate) is ₦900, and 60% of that is ₦540 — so both the ₦250 and the ₦500 outcomes are paid in full, since neither reaches the ₦540 ceiling.</p>
+      </div>
+      <p>Cashback expires <b>14 days</b> after being earned unless converted into a one-time discount coupon first, and that coupon then expires <b>24 hours</b> after conversion.</p>
       <p>Pools are shareable via a deep link that opens the app directly if it's installed, or a plain web page with an "Open in App" button if it isn't.</p>
 
       <div class="sub"><h3>Save to Buy</h3></div>
@@ -466,8 +489,12 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
         <tr><td>You withdraw / cancel</td><td>Full refund of everything saved so far, no questions asked</td></tr>
         <tr><td>Product goes out of stock</td><td>Saving is <b>not</b> blocked — you can keep depositing, and you're notified the moment it restocks</td></tr>
         <tr><td>Merchant discontinues the product entirely</td><td>The goal is automatically cancelled and everything saved is refunded</td></tr>
-        <tr><td>Goal sits unfunded too long</td><td>A daily housekeeping job expires stale goals and refunds whatever was saved</td></tr>
+        <tr><td>Goal sits unfunded too long</td><td>A daily housekeeping job expires stale goals and refunds whatever was saved — goals currently expire after <b>90 days</b>, with a reminder nudge at the 7-day-left mark and, if the item is out of stock, a further nudge every 30 days</td></tr>
       </table></div>
+      <div class="callout see">
+        <div class="tag">No cashback here</div>
+        <p>Unlike Buy Together and wishlist gifting below, Save to Buy pays <b>no bonus on top</b>. Withdrawing or completing a goal only ever returns exactly what was saved (plus any accidental overshoot) — there's nothing extra to earn by saving toward something alone.</p>
+      </div>
 
       <div class="sub"><h3>Combo Purchase</h3></div>
       <p>Two completely different origins feed the same "buy a bundle" experience:</p>
@@ -619,10 +646,36 @@ td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nu
       </div>
 
       <div class="sub"><h3>Peer Referrals — Automatic for Everyone</h3></div>
-      <p>Every account gets its own referral code (format <code>ZEE-XXXXXX</code>) the moment it's created — there's nothing to set up or apply for. Share it, and you earn a flat, admin-set ₦ amount the first time the person you referred transacts: one amount if they buy something as a shopper, a separate amount if they become a merchant and make a sale. Each relationship is capped at a maximum number of times it can pay out, so one heavily-active referral can't be farmed forever. Everything earned lands in the separate referral wallet described above, withdrawable on request.</p>
+      <p>Every account gets its own referral code (format <code>ZEE-XXXXXX</code>) the moment it's created — there's nothing to set up or apply for. Share it, and you earn a flat, admin-set ₦ amount every time the person you referred transacts — live settings, right now:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Setting</th><th>Live value</th></tr>
+        <tr><td>You earn, per order, when your referral buys something as a shopper</td><td class="num">₦200</td></tr>
+        <tr><td>You earn, per order, when your referral (as a merchant) makes a sale</td><td class="num">₦200</td></tr>
+        <tr><td>Minimum order size for either to count</td><td class="num">none</td></tr>
+        <tr><td>Maximum number of paying orders from the <i>same</i> referred person</td><td class="num">5</td></tr>
+      </table></div>
+      <div class="callout">
+        <div class="tag">Worked example</div>
+        <p>You refer a friend using your code. They go on to place 5 separate orders as a shopper — you earn ₦200 each time, for <b>₦1,000</b> total. From their 6th order onward, that same relationship has hit its cap and earns you nothing further.</p>
+      </div>
+      <p>Everything earned lands in the separate referral wallet described above, withdrawable on request.</p>
 
       <div class="sub"><h3>Onboarding Officers — Not Self-Service</h3></div>
-      <p>This is a completely different system that happens to share the same signup field. Onboarding officers aren't applicants — they're ZeeFashion's own field agents, created directly by an admin in the admin panel with their own referral code. A merchant who signs up under an officer's code generates a commission for that officer on every qualifying sale afterward — a percentage of <i>ZeeFashion's own commission</i>, not the sale itself, capped per order, per month, and over the merchant's whole lifetime. An order where a platform-funded coupon was used is deliberately excluded from this calculation entirely, so an officer is never paid a commission on a sale the platform already subsidized.</p>
+      <p>This is a completely different system that happens to share the same signup field. Onboarding officers aren't applicants — they're ZeeFashion's own field agents, created directly by an admin in the admin panel with their own referral code. A merchant who signs up under an officer's code generates a commission for that officer on every qualifying sale afterward — a percentage of <i>ZeeFashion's own commission</i>, not the sale itself. Live settings, right now:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Setting</th><th>Live value</th></tr>
+        <tr><td>Platform's own commission rate (what this is a percentage <i>of</i>)</td><td class="num">4.5%</td></tr>
+        <tr><td>Officer's share of that commission</td><td class="num">10%</td></tr>
+        <tr><td>Cap — officer's share can never exceed this much of the platform's commission</td><td class="num">30%</td></tr>
+        <tr><td>Minimum order size to qualify</td><td class="num">₦5,000</td></tr>
+        <tr><td>Max qualifying orders per merchant, per month</td><td class="num">5</td></tr>
+        <tr><td>Max qualifying orders per merchant, lifetime</td><td class="num">5</td></tr>
+      </table></div>
+      <div class="callout">
+        <div class="tag">Worked example</div>
+        <p>A merchant who signed up under Officer Ada's code sells a ₦20,000 order. The platform's own commission on it is 4.5% × ₦20,000 = ₦900. Officer Ada's raw share is 10% of that ₦900 = ₦90. That's checked against the cap — 30% of ₦900 is ₦270 — and since ₦90 is well under ₦270, Officer Ada is credited the full <b>₦90</b>. A ₦3,000 order from the same merchant wouldn't qualify at all (below the ₦5,000 minimum), and once that merchant has generated 5 qualifying orders in one calendar month, any further orders that month earn Officer Ada nothing more.</p>
+      </div>
+      <p>An order where a platform-funded coupon was used is deliberately excluded from this calculation entirely, so an officer is never paid a commission on a sale the platform already subsidized.</p>
 
       <div class="sub"><h3>Coupons</h3></div>
       <p>Two separate flavours exist, sharing one `coupons` table:</p>
