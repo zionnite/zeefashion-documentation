@@ -1,0 +1,774 @@
+<title>How ZeeFashion Actually Works</title>
+<style>
+/* ============ FONTS (system stacks only — no CDN, no silent webfont fallback) ============ */
+@font-face { font-family: dummy; src: local(""); } /* keeps some linters happy; unused */
+
+:root {
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ===== Light theme tokens — ZeeFashion's own brand palette ===== */
+  --bg: #ffffff;
+  --surface: #FAF8FF;
+  --surface-2: #F3E5F5;
+  --border: #EDE7F6;
+  --text: #1A1A2E;
+  --text-2: #4A4658;
+  --muted: #837f92;
+
+  --purple: #6C3483;
+  --purple-d: #4A1480;
+  --gold: #B8791E;      /* darkened from #E8A838 for AA text contrast on white */
+  --gold-bg: #E8A838;   /* full-saturation version, for chips/fills */
+  --teal: #0090A8;      /* darkened from #00C3E3 for AA text contrast on white */
+  --teal-bg: #00C3E3;
+
+  --brand: var(--purple);
+  --link: #5A2D70;
+
+  --good: #1E7A46;
+  --warn: #9C5B00;
+  --bad: #B3261E;
+
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07);
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D0D3E;
+    --surface: #14103C;
+    --surface-2: #1D1650;
+    --border: #322A66;
+    --text: #F1EEFB;
+    --text-2: #C9C2E6;
+    --muted: #948DBE;
+
+    --purple: #B58FD1;
+    --purple-d: #D8BCF0;
+    --gold: #F0BB5E;
+    --gold-bg: #F0BB5E;
+    --teal: #4FD9F0;
+    --teal-bg: #4FD9F0;
+
+    --brand: var(--gold);
+    --link: #F0BB5E;
+
+    --good: #5FCB8C;
+    --warn: #F0BB5E;
+    --bad: #F0897E;
+
+    --shadow: 0 3px 18px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D0D3E; --surface: #14103C; --surface-2: #1D1650; --border: #322A66;
+  --text: #F1EEFB; --text-2: #C9C2E6; --muted: #948DBE;
+  --purple: #B58FD1; --purple-d: #D8BCF0; --gold: #F0BB5E; --gold-bg: #F0BB5E;
+  --teal: #4FD9F0; --teal-bg: #4FD9F0; --brand: var(--gold); --link: #F0BB5E;
+  --good: #5FCB8C; --warn: #F0BB5E; --bad: #F0897E;
+  --shadow: 0 3px 18px rgba(0,0,0,0.35);
+}
+:root[data-theme="light"] {
+  --bg: #ffffff; --surface: #FAF8FF; --surface-2: #F3E5F5; --border: #EDE7F6;
+  --text: #1A1A2E; --text-2: #4A4658; --muted: #837f92;
+  --purple: #6C3483; --purple-d: #4A1480; --gold: #B8791E; --gold-bg: #E8A838;
+  --teal: #0090A8; --teal-bg: #00C3E3; --brand: var(--purple); --link: #5A2D70;
+  --good: #1E7A46; --warn: #9C5B00; --bad: #B3261E;
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--surface-2); color: var(--text); }
+
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 2px;
+}
+
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0 0 1em; max-width: 68ch; }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-2); padding: 0.1em 0.4em; border-radius: 4px; }
+
+/* ============ LAYOUT ============ */
+.page { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 292px; flex: none;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 22px 16px 40px;
+  scrollbar-width: thin;
+}
+.sidebar-head { padding: 4px 8px 16px; }
+.brand { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; letter-spacing: -0.01em; }
+.brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 2px; }
+
+.nav-filter {
+  width: 100%; padding: 8px 12px; margin: 4px 0 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 0.85rem; font-family: var(--font-body);
+}
+.nav-filter::placeholder { color: var(--muted); }
+
+.nav-group { margin-bottom: 6px; }
+.nav-group-label {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-2); padding: 10px 8px 4px;
+}
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.nav-group ul { list-style: none; margin: 0; padding: 0; }
+.nav-group li a {
+  display: block; padding: 6px 8px 6px 21px; border-radius: 7px;
+  font-size: 0.86rem; color: var(--text-2); text-decoration: none;
+  border-left: 2px solid transparent; margin-left: 3px;
+}
+.nav-group li a:hover { background: var(--surface-2); color: var(--text); }
+.nav-group li a.active { color: var(--text); font-weight: 600; background: var(--surface-2); }
+
+.nav-toggle {
+  display: none; position: fixed; top: 14px; right: 14px; z-index: 40;
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-size: 1.1rem; cursor: pointer;
+}
+
+.content { flex: 1; min-width: 0; padding: 56px 48px 100px; max-width: 980px; }
+
+/* ============ MASTHEAD ============ */
+.masthead { margin-bottom: 56px; }
+.eyebrow {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--brand); margin-bottom: 14px;
+}
+.masthead h1 { font-size: clamp(2.1rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; margin-bottom: 18px; }
+.masthead .lede { font-size: 1.1rem; color: var(--text-2); max-width: 58ch; }
+
+.stat-strip {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
+}
+.stat-chip {
+  border: 1px solid var(--border); background: var(--surface);
+  border-radius: 999px; padding: 7px 16px; font-size: 0.82rem; color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.stat-chip b { color: var(--text); font-weight: 700; }
+
+/* ============ SECTIONS ============ */
+.doc-section { margin-bottom: 64px; scroll-margin-top: 24px; }
+.doc-section + .doc-section { padding-top: 8px; border-top: 1px dashed var(--border); }
+
+.section-head { border-left: 3px solid var(--accent); padding-left: 20px; margin-bottom: 28px; }
+.section-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-head h2 { font-size: 1.7rem; font-weight: 600; scroll-margin-top: 24px; }
+.section-head .dek { color: var(--text-2); margin-top: 8px; font-size: 0.98rem; max-width: 62ch; }
+
+.doc-section.accent-purple { --accent: var(--purple); }
+.doc-section.accent-teal   { --accent: var(--teal); }
+.doc-section.accent-gold   { --accent: var(--gold); }
+.doc-section.accent-deep   { --accent: var(--purple-d); }
+
+.sub { margin: 34px 0 16px; }
+.sub h3 {
+  font-family: var(--font-body); font-size: 0.95rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--text);
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+
+/* ============ COMPONENTS ============ */
+.callout {
+  border: 1px solid var(--border); border-left: 3px solid var(--accent, var(--brand));
+  background: var(--surface); border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+  font-size: 0.93rem;
+}
+.callout .tag {
+  display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent, var(--brand)); margin-bottom: 6px;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout.rule { border-left-color: var(--bad); }
+.callout.rule .tag { color: var(--bad); }
+.callout.see { border-left-color: var(--muted); }
+.callout.see .tag { color: var(--muted); }
+
+.flow { list-style: none; margin: 18px 0; padding: 0; border-left: 2px solid var(--border); }
+.flow li { position: relative; padding: 2px 0 20px 24px; font-size: 0.95rem; }
+.flow li:last-child { padding-bottom: 2px; }
+.flow li::before {
+  content: ""; position: absolute; left: -5px; top: 6px; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--accent, var(--brand));
+}
+.flow li b { color: var(--text); }
+
+.table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--border); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 480px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { background: var(--surface); font-weight: 700; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-2); }
+tr:last-child td { border-bottom: none; }
+td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+.pill {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.76rem;
+  padding: 2px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text-2);
+  border: 1px solid var(--border); white-space: nowrap;
+}
+.pill.on { color: var(--good); border-color: currentColor; }
+.pill-seq { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0; font-family: var(--font-mono); font-size: 0.82rem; }
+.pill-seq .arrow { color: var(--muted); }
+
+.glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
+.gterm { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
+.gterm code { display: block; margin-bottom: 5px; background: none; padding: 0; font-weight: 700; color: var(--text); }
+.gterm span { font-size: 0.85rem; color: var(--text-2); }
+.gterm.in { border-left: 3px solid var(--good); }
+.gterm.out { border-left: 3px solid var(--bad); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+.admin-grid { display: grid; gap: 10px; margin: 16px 0; }
+.admin-row {
+  display: grid; grid-template-columns: 170px 1fr; gap: 16px;
+  border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; background: var(--surface);
+}
+.admin-row .name { font-weight: 700; font-size: 0.9rem; }
+.admin-row .desc { font-size: 0.87rem; color: var(--text-2); }
+@media (max-width: 640px) { .admin-row { grid-template-columns: 1fr; } }
+
+.colophon {
+  margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--muted);
+}
+.colophon p { max-width: 70ch; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .nav-toggle { display: block; }
+  .sidebar {
+    position: fixed; z-index: 30; top: 0; left: 0; height: 100vh;
+    transform: translateX(-100%); transition: transform 0.22s ease; box-shadow: var(--shadow);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .content { padding: 80px 22px 80px; }
+}
+@media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+</style>
+
+<div class="page">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+  <nav class="sidebar" id="sidebar" aria-label="Table of contents">
+    <div class="sidebar-head">
+      <div class="brand">ZeeFashion</div>
+      <div class="brand-sub">Operations Reference</div>
+    </div>
+    <input class="nav-filter" id="navFilter" type="text" placeholder="Filter sections…" aria-label="Filter sections">
+    <div class="nav-groups" id="navGroups">
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple)"></span>Getting In</div>
+        <ul>
+          <li><a href="#getting-started">Getting Started</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple)"></span>Shopping</div>
+        <ul>
+          <li><a href="#shopping-discovery">Shopping &amp; Discovery</a></li>
+          <li><a href="#merchant-tools">Merchant Tools</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--teal)"></span>Ways to Buy</div>
+        <ul>
+          <li><a href="#group-buying">Group Buying &amp; Bundles</a></li>
+          <li><a href="#custom-fit">Custom Fit</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--teal)"></span>Getting It To You</div>
+        <ul>
+          <li><a href="#logistics">Fulfillment &amp; Logistics</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--gold-bg)"></span>Money</div>
+        <ul>
+          <li><a href="#money">Money Movement</a></li>
+          <li><a href="#subscriptions">Subscriptions &amp; Plans</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--gold-bg)"></span>Growth Engine</div>
+        <ul>
+          <li><a href="#growth-referrals">Growth &amp; Referrals</a></li>
+          <li><a href="#community-rewards">Community &amp; Rewards</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple-d)"></span>Trust &amp; Support</div>
+        <ul>
+          <li><a href="#trust-safety">Trust &amp; Safety</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple-d)"></span>Behind the Scenes</div>
+        <ul>
+          <li><a href="#admin-panel">Admin Control Panel</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <header class="masthead">
+      <div class="eyebrow">Operations Reference</div>
+      <h1>How ZeeFashion Actually Works</h1>
+      <p class="lede">Everything the app and the admin panel do, end to end — from the moment someone signs up, through every way there is to buy something, to the moment money actually lands in a bank account. Written from the real code, not the marketing description.</p>
+      <div class="stat-strip">
+        <div class="stat-chip"><b>3</b> separate wallets per person</div>
+        <div class="stat-chip"><b>6</b> distinct ways to buy something</div>
+        <div class="stat-chip"><b>2</b> referral systems running side by side</div>
+        <div class="stat-chip"><b>25</b> admin control-panel pages</div>
+        <div class="stat-chip">1 external logistics partner (<b>Eziza</b>)</div>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <section id="getting-started" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Getting In</div>
+        <h2>Getting Started</h2>
+        <p class="dek">Every account starts as a buyer. Becoming a merchant, an influencer, or anything else is a deliberate second step, not a signup choice.</p>
+      </div>
+
+      <div class="sub"><h3>Onboarding &amp; Sign Up</h3></div>
+      <p>First launch shows three full-bleed slides — shopping, buying together, and custom orders — as a one-time introduction. Once seen, they never show again; this is tracked by a small file saved on the device itself, not a server setting, specifically so it can't silently reset.</p>
+      <p>Sign-up is a single form with <b>no role picker</b> — name, phone, email, password. Every new account is a buyer. There's one optional field, collapsed by default: <b>"Add referral code."</b> Typing a code checks it live against two completely different systems at once and shows an inline badge before you even submit:</p>
+      <div class="table-wrap"><table>
+        <tr><th>What you typed matches…</th><th>Badge shown</th><th>What actually happens</th></tr>
+        <tr><td>An onboarding officer's code</td><td><span class="pill on">Partner</span></td><td>You're linked to that officer — relevant if you go on to become a merchant (see <a href="#growth-referrals">Growth &amp; Referrals</a>)</td></tr>
+        <tr><td>Another user's personal code</td><td><span class="pill on">User</span></td><td>That person earns a referral credit the first time you (or a merchant you later become) transact</td></tr>
+        <tr><td>Neither</td><td><span class="pill">Invalid</span></td><td>Nothing — you can still sign up, just without a referral link</td></tr>
+      </table></div>
+      <p>Login, forgot-password, and reset-password all follow standard email flows.</p>
+
+      <div class="sub"><h3>Becoming a Merchant</h3></div>
+      <p>There's no "switch to selling" toggle. A buyer submits a <b>Seller Application</b> — store name, business type, location, phone — and an admin approves or rejects it from the admin panel (a rejection requires a written reason). You're notified either way, and only on approval do the store-management tools in the app unlock.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="shopping-discovery" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Shopping</div>
+        <h2>Shopping &amp; Discovery</h2>
+        <p class="dek">Browsing, searching, reviewing, and wishlisting — the everyday layer everything else sits on top of.</p>
+      </div>
+
+      <div class="sub"><h3>Search — Two Different Ways to Find Something</h3></div>
+      <p>Typing into search actually runs one of two engines, and you're never told which one answered you:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Mode</th><th>What it can do</th></tr>
+        <tr><td><b>Keyword search</b></td><td>Matches the literal words you typed against a product's name, description, and brand. "Red gown" only finds products that literally contain those words.</td></tr>
+        <tr><td><b>Semantic search</b></td><td>Understands meaning. "Red gown" can surface a product titled "Crimson Evening Dress" — it never sees the word "red," but the meaning matches.</td></tr>
+      </table></div>
+      <div class="callout">
+        <div class="tag">What you'll see</div>
+        <p>Semantic search silently falls back to plain keyword search the instant it can't run — most commonly when its underlying OpenAI quota is exhausted. Nothing errors, nothing looks broken; search just quietly becomes literal instead of meaning-based for a while. Once a search phrase has been converted to an embedding, it's cached, so scrolling for "load more" results never repeats that lookup.</p>
+      </div>
+
+      <div class="sub"><h3>Reviews</h3></div>
+      <p>Buyers rate and review products they've bought. Two things go beyond a plain star rating: merchants can <b>publicly reply</b> to any review on their own product, and other shoppers can mark a review "Helpful," with a running count shown next to it.</p>
+
+      <div class="sub"><h3>Wishlist &amp; Gifting a Wishlist Item</h3></div>
+      <p>A shopper builds a collection of saved products and can share it via a public link. Anyone with that link can buy an item <i>for</i> the list's owner. The twist: the resulting cashback credit goes to the <b>list owner</b>, not to the friend who actually paid — buying someone a gift also hands them a small reward for having wanted it.</p>
+      <p>Every product detail view also quietly increments a view counter, visible to the merchant as basic interest data on their own listing.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="merchant-tools" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Shopping</div>
+        <h2>Merchant Tools</h2>
+        <p class="dek">What a store owner actually manages once their seller application is approved.</p>
+      </div>
+
+      <div class="sub"><h3>Products</h3></div>
+      <p>Merchants add and edit products with variants (size, colour). <b>Deleting a product never actually deletes the row</b> — it flips a hidden flag instead. Too many other things point at a product by its ID (past orders, combos, influencer stats), so a real delete would break all of them; a "deleted" product simply stops appearing anywhere new.</p>
+
+      <div class="sub"><h3>Merchant Goals</h3></div>
+      <p>A private, self-set monthly target — an orders count and a revenue figure the merchant sets for themselves — tracked against what actually happened that month. It's purely a personal dashboard: it doesn't unlock anything and doesn't gate anything, it's just a way for a merchant to watch their own progress.</p>
+
+      <div class="sub"><h3>Getting Paid</h3></div>
+      <p>A merchant's money sits in two entirely separate pots (see <a href="#money">Money Movement</a> for the full wallet picture): ordinary sales revenue, and gift income from fans. Each is requested as its own payout — the merchant submits a request, an admin approves it, and Paystack sends the actual bank transfer.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="group-buying" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Ways to Buy</div>
+        <h2>Group Buying &amp; Bundles</h2>
+        <p class="dek">Three ways to buy something other than "add to cart and check out" — together with others, over time by yourself, or as a bundle someone else assembled.</p>
+      </div>
+
+      <div class="sub"><h3>Buy Together (Pool)</h3></div>
+      <p>Any buyer can start a pool on a product. The target is simply the product's full price — it isn't divided by however many people you expect to join. Anyone with the link can contribute any amount, by wallet or by Paystack, as many times as they like, until the pool's total reaches the target. The moment it does, an order is placed automatically, under the <b>pool's initiator</b>.</p>
+      <div class="flow">
+        <li><b>Start a pool</b> — pick a product, size/colour and delivery address lock in immediately</li>
+        <li><b>Others contribute</b> — wallet or Paystack, any amount, any number of times</li>
+        <li><b>Target reached</b> — order auto-places under the initiator's account, everyone gets notified</li>
+      </div>
+      <p>Two things can happen to the target price while a pool is still open, and they're handled very differently:</p>
+      <div class="table-wrap"><table>
+        <tr><th>What happens</th><th>Effect on the pool</th></tr>
+        <tr><td>Merchant drops the price</td><td>Every contributor gets a <b>proportional refund</b> back to their wallet, and the target itself is lowered to match</td></tr>
+        <tr><td>Merchant raises the price</td><td>The target simply rises — no refunds, contributors just need to close a slightly bigger gap</td></tr>
+        <tr><td>Product goes out of stock</td><td>Every contributor is refunded <b>in full</b></td></tr>
+        <tr><td>Initiator cancels</td><td>Every contributor is refunded <b>in full</b></td></tr>
+      </table></div>
+      <div class="callout rule">
+        <div class="tag">Anti-duplicate rule</div>
+        <p>Contributing twice in quick succession is blocked for two minutes client-side before it even reaches payment. Paystack contributions are additionally de-duplicated by their own payment reference rather than by amount-and-timing — an earlier version blocked two genuinely separate, identically-priced contributions made minutes apart, which was wrong, so it now keys off the real payment reference instead.</p>
+      </div>
+      <p><b>Cashback</b> goes only to the pool's <b>initiator</b>, never to contributors — a reward for organizing the pool, not for joining one. It's admin-configured as either a flat ₦ amount or a percentage of the contribution, with a separate (usually higher) rate for someone's very first pool, and it can never exceed 60% of the platform's own commission on that order — the platform always keeps at least some of its own cut. Cashback expires <b>14 days</b> after being earned unless converted into a one-time discount coupon first, and that coupon then expires <b>24 hours</b> after conversion.</p>
+      <p>Pools are shareable via a deep link that opens the app directly if it's installed, or a plain web page with an "Open in App" button if it isn't.</p>
+
+      <div class="sub"><h3>Save to Buy</h3></div>
+      <p>The one-person version of the same idea: save toward a single product at your own pace instead of splitting it with anyone. The price is locked in the moment the goal is created, so a later price change on the product doesn't move your target. Deposit any amount, any number of times, by wallet or Paystack.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Situation</th><th>What happens</th></tr>
+        <tr><td>Saved amount reaches the target</td><td>Order places automatically. If the very last deposit pushed you <i>past</i> the target (say the price dropped in the meantime), the extra is refunded to your wallet automatically</td></tr>
+        <tr><td>You withdraw / cancel</td><td>Full refund of everything saved so far, no questions asked</td></tr>
+        <tr><td>Product goes out of stock</td><td>Saving is <b>not</b> blocked — you can keep depositing, and you're notified the moment it restocks</td></tr>
+        <tr><td>Merchant discontinues the product entirely</td><td>The goal is automatically cancelled and everything saved is refunded</td></tr>
+        <tr><td>Goal sits unfunded too long</td><td>A daily housekeeping job expires stale goals and refunds whatever was saved</td></tr>
+      </table></div>
+
+      <div class="sub"><h3>Combo Purchase</h3></div>
+      <p>Two completely different origins feed the same "buy a bundle" experience:</p>
+      <div class="two-col">
+        <div>
+          <p><b>Merchant combos</b> — a merchant bundles their own products together with a discount of up to <b>80%</b>. Every new combo starts as a draft and needs <b>admin approval</b> before it goes live.</p>
+        </div>
+        <div>
+          <p><b>Platform auto-combos</b> — regenerated every day, four different kinds: products from the same merchant, a shared price range, the same category, or items the system has learned are complementary.</p>
+        </div>
+      </div>
+      <p>Buying a combo is a single purchase with one confirmation reference — even when the bundle spans multiple different merchants. The buyer gets one email; each merchant involved gets their own separate notification about their part of the sale. If any item in a combo is out of stock, that specific combo simply can't be bought until it's back. The home-feed carousel deliberately caps at two combos from any one merchant at a time, so the feed doesn't end up dominated by a single shop.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="custom-fit" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Ways to Buy</div>
+        <h2>Custom Fit</h2>
+        <p class="dek">A bidding marketplace for made-to-order and tailored pieces — closer to a freelance job board than a product listing.</p>
+      </div>
+
+      <div class="flow">
+        <li><b>Customer posts a request</b> — title, description, reference photos, and their own bidding deadline (anywhere from 6 hours to 30 days out; 2 days is the suggested default)</li>
+        <li><b>Artisans browse and bid</b> — any merchant meeting the request's own eligibility gates, if it has any</li>
+        <li><b>Back-and-forth</b> — the customer can counter an offer; the artisan can accept the counter, or decline it and let their original bid stand</li>
+        <li><b>Customer accepts a bid</b> — an order is created, referenced as <code>CUSTOMFIT-{requestId}-{bidId}</code></li>
+      </div>
+
+      <p>A customer can optionally lock a request down with up to four independent gates — an artisan failing any one of them simply can't bid at all:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Gate</th><th>What it checks</th></tr>
+        <tr><td>Location</td><td>The artisan's store location must match the request's state or city</td></tr>
+        <tr><td>Sales history</td><td>A minimum number of completed, paid orders</td></tr>
+        <tr><td>Rating</td><td>A minimum average star rating across all their products</td></tr>
+        <tr><td>Subscription tier</td><td>A minimum plan level — e.g. "Standard or above only"</td></tr>
+      </table></div>
+      <p>A separate, always-on check compares the customer's maximum acceptable delivery time against what each bid promises — a bid promising a longer turnaround than the customer will accept is rejected before it can even be submitted.</p>
+
+      <div class="callout rule">
+        <div class="tag">The bid fee</div>
+        <p>Placing a bid costs the <b>artisan</b> an admin-configurable fee — <b>₦500</b> by default — deducted from their wallet the instant they bid. It is not refunded under any circumstance: not if the customer picks someone else, not if the artisan withdraws, not if the request expires unanswered. It functions as a straightforward pay-to-bid fee.</p>
+      </div>
+      <p>Once a bid is accepted, the platform also takes a separate cut of the job itself: a percentage of the <b>labor</b> portion of the price, and a separate percentage of the <b>fabric cost</b> portion — both figures set independently by an admin.</p>
+      <p>A request that passes its own bidding deadline unanswered expires automatically (checked hourly), and any bids still sitting pending on it are rejected along with it.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="logistics" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Getting It To You</div>
+        <h2>Fulfillment &amp; Logistics</h2>
+        <p class="dek">From "the merchant marked it delivered" to "the courier is on the map right now" — including a full external delivery partner working behind the scenes.</p>
+      </div>
+
+      <div class="sub"><h3>Two Different Kinds of "Status"</h3></div>
+      <p>Every order actually tracks two separate things, and confusing them is the easiest way to misread the system:</p>
+      <div class="two-col">
+        <div><p><b>Order status</b> — is this a genuine, completed transaction, or was it cancelled? A simple yes/no on the money side.</p></div>
+        <div><p><b>Delivery status</b> — where the physical package actually is right now: <span class="pill">Order Placed</span> → <span class="pill">Order Shipped</span> → <span class="pill">Out For Delivery</span> → <span class="pill">Awaiting Confirmation</span> → <span class="pill on">Delivered</span></p></div>
+      </div>
+      <div class="callout rule">
+        <div class="tag">The rule that protects buyers</div>
+        <p>When a merchant marks a delivery as done, the system deliberately does <b>not</b> set it to "Delivered" — it goes to "Awaiting Confirmation" instead. Only the buyer's own "Confirm Receipt" tap ever sets the real Delivered status, and that single action is what unlocks the merchant's ability to request payout on that order. A merchant can never confirm their own payout by themselves.</p>
+      </div>
+
+      <div class="sub"><h3>Internal Logistics — Riders &amp; Companies Bidding</h3></div>
+      <p>Independent riders and logistics companies apply and are approved by an admin before they can carry anything. A rider is bound to a single coverage state; a company, running a fleet, can cover several. When a merchant marks their side of an order "Ready for Pickup," a bidding round opens to nearby riders and companies, and the buyer watches offers come in live — price, rating, distance — choosing whichever one they like and paying the delivery fee <b>separately</b> from the product price itself (same wallet/Paystack flow, same PIN confirmation as any other payment).</p>
+      <div class="pill-seq">
+        <span class="pill">open</span><span class="arrow">→</span><span class="pill">assigned</span><span class="arrow">→</span><span class="pill">awaiting_pickup_confirm</span><span class="arrow">→</span><span class="pill">picked_up</span><span class="arrow">→</span><span class="pill">delivered</span><span class="arrow">→</span><span class="pill on">confirmed</span>
+      </div>
+      <p>The rider marks their own arrival at the store; the merchant then confirms the physical handoff, which is what actually advances the delivery to "picked up." The rider marks arrival at the buyer; only the buyer's own confirmation closes the loop and releases the rider's earnings. The buyer can then leave a 1–5 star rating, which feeds the average shown on that rider's future bids.</p>
+
+      <div class="sub"><h3>Eziza — the External Logistics Partner</h3></div>
+      <p>ZeeFashion can route a delivery to <b>Eziza</b>, a fully separate logistics company with its own app and its own riders, instead of using its own internal marketplace. All communication with Eziza happens through a secure server-side connection — never directly from a phone — so no delivery-partner credentials are ever exposed on a device. To a buyer or merchant, the experience is built to look and feel <b>identical</b> either way: the same live map, the same incoming-bids list, the same six-stage status sequence above — it's simply a different set of riders bidding behind the scenes.</p>
+
+      <div class="sub"><h3>Instant Courier (External Carriers)</h3></div>
+      <p>For deliveries routed through Eziza, a buyer doesn't have to wait for a rider to bid at all. They can request real quotes from courier partners (DHL, GIG, and others) and book + pay for pickup immediately — shown as "Instant Courier Booked" rather than a rider assignment. This channel is built and shipped, but full live testing is still waiting on the courier partner's own account approval, so its real-world rate accuracy hasn't been independently confirmed end to end yet.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="money" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Money</div>
+        <h2>Money Movement</h2>
+        <p class="dek">Every person on ZeeFashion actually holds up to three separate balances, each with a different job.</p>
+      </div>
+
+      <div class="table-wrap"><table>
+        <tr><th>Wallet</th><th>What lives in it</th></tr>
+        <tr><td><b>Main balance</b></td><td>Everyday spending money — top-ups, sales revenue, refunds. This is what pays for a purchase.</td></tr>
+        <tr><td><b>Gift wallet</b></td><td>A merchant's tip income only, shown as its own gold "Gift Earnings" card — kept visually and functionally separate from ordinary sales revenue.</td></tr>
+        <tr><td><b>Referral wallet</b></td><td>Peer-referral earnings only. Not spendable in the app at all — it can only be withdrawn.</td></tr>
+      </table></div>
+
+      <div class="sub"><h3>Topping Up &amp; Paying</h3></div>
+      <p>Topping up opens an embedded Paystack checkout inside the app. Crucially, it isn't the app itself that credits the wallet on a successful payment — a server-side webhook from Paystack is what actually does that, so the balance only ever moves on a payment ZeeFashion's own servers have independently confirmed.</p>
+      <p>Confirming an actual purchase asks for your PIN, or, if you've turned it on, your device's fingerprint or face — either is accepted as proof it's really you.</p>
+
+      <div class="sub"><h3>Reading Your Transaction History</h3></div>
+      <p>Every entry carries a type that says exactly what it was:</p>
+      <div class="glossary">
+        <div class="gterm in"><code>credit / deposit</code><span>Money added — a top-up or a direct credit</span></div>
+        <div class="gterm in"><code>gift_received</code><span>A fan tipped you (merchants)</span></div>
+        <div class="gterm in"><code>refunded / stb_refund / pool_refund</code><span>Money returned from a cancelled order, Save to Buy goal, or Buy Together pool</span></div>
+        <div class="gterm out"><code>debit / withdrawal</code><span>Money taken out, or a payout you requested</span></div>
+        <div class="gterm out"><code>gift_sent</code><span>You tipped a merchant</span></div>
+        <div class="gterm out"><code>payout</code><span>A merchant/officer/influencer payout that was actually paid</span></div>
+        <div class="gterm out"><code>pool_contribution</code><span>You paid into someone's Buy Together pool</span></div>
+        <div class="gterm out"><code>bid_fee</code><span>The ₦500 Custom Fit bid fee (artisans)</span></div>
+        <div class="gterm out"><code>custom_purchase</code><span>You paid for an accepted Custom Fit order</span></div>
+      </div>
+      <p>Each row also carries a plain-language description and a reference code — that's what actually shows up in the transaction list, not the raw type name.</p>
+
+      <div class="sub"><h3>Gifts — Tipping a Merchant</h3></div>
+      <p>Gifting only ever flows <b>buyer → merchant</b>, sent straight from a product page or a store's profile — there's no buyer-to-buyer gifting. Each gift item has its own price and its own split between the merchant and the platform, set independently per gift rather than one global rate. Tapping a gift reserves its price against your balance <i>immediately</i>, client-side, before the server even responds — so rapid double-tapping can never spend more than you actually have. The merchant is notified by push with your name, the gift, and any message you attached, and sees a running gift feed and total count on their own dashboard.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="subscriptions" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Money</div>
+        <h2>Subscriptions &amp; Plans</h2>
+        <p class="dek">What a merchant actually pays for, and what really happens when they outgrow their plan.</p>
+      </div>
+
+      <p>Plans — Starter and up — are entirely content managed by an admin: name, monthly price, a separate annual price, an order cap, and a commission percentage. Nothing about a plan is hard-coded into the app, so a new tier can be introduced without an app update.</p>
+      <p>Two things genuinely differ between tiers, in the actual enforcement code rather than just marketing copy:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Lever</th><th>What it means in practice</th></tr>
+        <tr><td>Monthly order cap</td><td>How many orders a merchant can take before hitting their limit. The top tier implements "unlimited" simply as a cap of zero, meaning no cap at all.</td></tr>
+        <tr><td>Commission %</td><td>ZeeFashion's cut of each sale on that plan. This rate is locked onto every order the instant it's placed, so a later upgrade or downgrade never rewrites the commission on an order that's already happened.</td></tr>
+      </table></div>
+
+      <div class="callout rule">
+        <div class="tag">Hitting your cap doesn't block the sale</div>
+        <p>A customer's payment always goes through, cap or no cap. If the merchant is over their monthly limit, the order is placed but stays completely invisible to them, with a 24-hour countdown attached. Upgrade within that window, and everything appears exactly as if it had always been visible. Don't upgrade in time, and the customer is automatically refunded and the order is cancelled — the merchant's plan status genuinely decides whether that sale survives.</p>
+      </div>
+
+      <p>An admin can also hand a merchant a plan directly, entirely outside Paystack's billing cycle — a <b>manual</b> plan. These get a warning 7 days before they lapse, another at 1 day, and then automatically drop back down to Starter if nothing happens in between.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="growth-referrals" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Growth Engine</div>
+        <h2>Growth &amp; Referrals</h2>
+        <p class="dek">Four different ways ZeeFashion grows — one that's automatic for every user, one that pays a small internal sales team, one for shop-scoped discount codes, and one for social-media promotion.</p>
+      </div>
+
+      <div class="sub"><h3>Peer Referrals — Automatic for Everyone</h3></div>
+      <p>Every account gets its own referral code (format <code>ZEE-XXXXXX</code>) the moment it's created — there's nothing to set up or apply for. Share it, and you earn a flat, admin-set ₦ amount the first time the person you referred transacts: one amount if they buy something as a shopper, a separate amount if they become a merchant and make a sale. Each relationship is capped at a maximum number of times it can pay out, so one heavily-active referral can't be farmed forever. Everything earned lands in the separate referral wallet described above, withdrawable on request.</p>
+
+      <div class="sub"><h3>Onboarding Officers — Not Self-Service</h3></div>
+      <p>This is a completely different system that happens to share the same signup field. Onboarding officers aren't applicants — they're ZeeFashion's own field agents, created directly by an admin in the admin panel with their own referral code. A merchant who signs up under an officer's code generates a commission for that officer on every qualifying sale afterward — a percentage of <i>ZeeFashion's own commission</i>, not the sale itself, capped per order, per month, and over the merchant's whole lifetime. An order where a platform-funded coupon was used is deliberately excluded from this calculation entirely, so an officer is never paid a commission on a sale the platform already subsidized.</p>
+
+      <div class="sub"><h3>Coupons</h3></div>
+      <p>Two separate flavours exist, sharing one `coupons` table:</p>
+      <div class="two-col">
+        <div><p><b>Merchant coupons</b> — created by a merchant for their own products (percentage or flat ₦ off, minimum order, usage cap, optional expiry, optionally scoped to specific products). The merchant always covers <b>100%</b> of their own coupon's discount.</p></div>
+        <div><p><b>Platform coupons</b> — created by an admin, aimable at everyone, specific products, specific merchants, or specific customers, and configurable to split the discount's cost between the platform and the affected merchant.</p></div>
+      </div>
+      <p>Either way, a shopper can use the exact same coupon code only <b>once, ever</b>. And a coupon code can never collide with an influencer code — the system blocks that at creation time, so typing a code is never ambiguous about which discount system it belongs to.</p>
+
+      <div class="sub"><h3>Influencers</h3></div>
+      <p>Anyone with at least <b>100 followers</b> on a supported platform can apply; an admin approves or rejects the application. Approval alone doesn't make an influencer's code work everywhere — it only activates for a specific merchant once <i>that merchant</i> has explicitly authorized that influencer (optionally limited to specific products), and only if the merchant allows influencer promotion at all.</p>
+      <p>Commission and customer-discount rates cascade through three levels, in order: a merchant-specific rate if one was ever set for that pairing, otherwise the influencer's own personal rate, otherwise their tier's plain default. Earnings sit as "pending" after each sale, and rather than choosing an amount to withdraw, an influencer requests payment of everything owed at once.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="community-rewards" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Growth Engine</div>
+        <h2>Community &amp; Rewards</h2>
+        <p class="dek">Badges, streaks, and the leaderboard — the layer that makes routine activity feel like it's being noticed.</p>
+      </div>
+
+      <div class="sub"><h3>Badges &amp; Streaks</h3></div>
+      <p>Every badge is defined as data — a name, an emoji, who it's for, and the exact count that unlocks it — so new tiers can be added by an admin without touching the app itself. The system tracks three kinds of milestone:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Kind</th><th>What triggers it</th></tr>
+        <tr><td>Buyer badges</td><td>Total completed orders (roughly tiered around 1 / 5 / 20 / 50 / 100 — exact live thresholds are admin-configurable and can be changed at any time)</td></tr>
+        <tr><td>Merchant badges</td><td>Total completed sales (roughly tiered around 1 / 5 / 50 / 100 / 500, same caveat)</td></tr>
+        <tr><td>Weekly streaks</td><td>Being active in consecutive Monday-starting weeks — any gap resets the current streak to 1, though your longest-ever streak is remembered permanently</td></tr>
+      </table></div>
+      <p>A brand-new badge plays a one-time celebration animation the first time it's seen.</p>
+
+      <div class="sub"><h3>Leaderboard</h3></div>
+      <p>Two public boards — buyers and merchants — each viewable across three windows: this week, this month, and all-time. The top 50 are shown to everyone; if you're not in that top group, you still get a personal "Your Rank" card so you know roughly where you stand.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="trust-safety" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Trust &amp; Support</div>
+        <h2>Trust &amp; Safety</h2>
+        <p class="dek">Three genuinely different channels exist for "something's wrong" — a formal dispute process, a general support line, and ordinary conversation. They are not the same thing, and don't share a screen.</p>
+      </div>
+
+      <div class="sub"><h3>Disputes</h3></div>
+      <p>Either side of an order — buyer or merchant — can raise a formal dispute, choosing from seven categories: <i>Not as Described, Damaged/Defective, Not Delivered, Wrong Item, Refund Not Processed, Late Delivery,</i> or <i>Other.</i> A dispute moves from <span class="pill">open</span> to <span class="pill">under_review</span> once an admin steps in and privately asks the other side to respond, then closes as <span class="pill on">resolved</span> or <span class="pill">rejected</span>.</p>
+      <p>Evidence stays private the whole way through — each party can only see their own submission, and only the admin ever sees both sides. There are deliberately only three possible outcomes, to keep the maths simple and consistent:</p>
+      <div class="table-wrap"><table>
+        <tr><th>Outcome</th><th>What actually happens</th></tr>
+        <tr><td><b>Full refund</b></td><td>Auto-calculated and credited straight to the buyer's wallet — no partial refunds exist, specifically to avoid inconsistent commission/cashback maths</td></tr>
+        <tr><td><b>Replacement</b></td><td>A label only. No money moves and no new order is created — the merchant coordinates the actual replacement with the buyer over in-app chat</td></tr>
+        <tr><td><b>Dismissed</b></td><td>No action; the dispute is simply closed</td></tr>
+      </table></div>
+
+      <div class="sub"><h3>Support Tickets</h3></div>
+      <p>A separate, general-purpose line straight to the platform itself — not tied to a specific order the way a dispute is, and not a conversation with a merchant the way chat is. A customer opens a ticket under one of eight categories (Order, Payment, Account, Product, Delivery, Refund, Technical, or Other Issue), and an admin replies directly from the admin panel, triggering a push notification the moment they do.</p>
+
+      <div class="sub"><h3>In-App Chat</h3></div>
+      <p>A dedicated conversation is created automatically for every single order, between that buyer and that merchant — nothing to set up. It comes with a collapsible product-context banner, a shared measurements sheet either side can fill in or edit, image messages, and real double-tick read receipts so you know the second the other person has actually seen a message.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="admin-panel" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Behind the Scenes</div>
+        <h2>Admin Control Panel</h2>
+        <p class="dek">A separate web application (not part of the phone app) where an admin runs the whole platform. Every page below is a real, working screen.</p>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-row"><div class="name">Overview</div><div class="desc">Landing dashboard — the first thing an admin sees.</div></div>
+        <div class="admin-row"><div class="name">Stats (P&amp;L)</div><div class="desc">Platform commission earned versus everything paid out against it — coupon cost, cashback, officer commissions, referral credits — netting out to a real profit-or-loss figure, filterable by month or all-time.</div></div>
+        <div class="admin-row"><div class="name">Merchants</div><div class="desc">The full merchant list and management screen.</div></div>
+        <div class="admin-row"><div class="name">Users</div><div class="desc">The full buyer/user list and management screen.</div></div>
+        <div class="admin-row"><div class="name">Orders</div><div class="desc">Every order, with a separate breakdown for Custom Fit orders.</div></div>
+        <div class="admin-row"><div class="name">Disputes</div><div class="desc">Review evidence from both sides and resolve — full refund, replacement, or dismiss.</div></div>
+        <div class="admin-row"><div class="name">Support</div><div class="desc">The support-ticket queue and reply screen.</div></div>
+        <div class="admin-row"><div class="name">Categories &amp; Products</div><div class="desc">Category structure and the full product catalog, viewed platform-wide.</div></div>
+        <div class="admin-row"><div class="name">Colors</div><div class="desc">The shared colour list/tag system used across product variants.</div></div>
+        <div class="admin-row"><div class="name">Coupons (Platform)</div><div class="desc">Admin-created, platform-wide coupons — distinct from the coupons merchants create for themselves in-app.</div></div>
+        <div class="admin-row"><div class="name">Subscriptions</div><div class="desc">Full plan CRUD — name, monthly price, separate annual price, order caps, commission rate — and manually assigning or overriding any merchant's plan.</div></div>
+        <div class="admin-row"><div class="name">Seller Requests</div><div class="desc">Approve or reject buyer-to-merchant applications; a rejection requires a written reason.</div></div>
+        <div class="admin-row"><div class="name">Sliders</div><div class="desc">Home-page promotional/ad image management.</div></div>
+        <div class="admin-row"><div class="name">Influencers</div><div class="desc">Approve or reject influencer applications; manage codes and commission tiers.</div></div>
+        <div class="admin-row"><div class="name">Onboarding Officers</div><div class="desc">Officers are created directly here, not applied for — an admin sets up the account and referral code themselves, then tracks that officer's onboarded merchants, earnings, and payout requests.</div></div>
+        <div class="admin-row"><div class="name">Referrals</div><div class="desc">Configure the peer-referral system's payout amounts and caps; monitor its activity.</div></div>
+        <div class="admin-row"><div class="name">Admins</div><div class="desc">Manage admin accounts themselves.</div></div>
+        <div class="admin-row"><div class="name">Gamification</div><div class="desc">Badge, streak, and leaderboard administration.</div></div>
+        <div class="admin-row"><div class="name">Gift Withdrawals</div><div class="desc">Approve merchants' gift-wallet payout requests.</div></div>
+        <div class="admin-row"><div class="name">Buy Together</div><div class="desc">Pool monitoring and management.</div></div>
+        <div class="admin-row"><div class="name">Save to Buy</div><div class="desc">Goal monitoring and management.</div></div>
+        <div class="admin-row"><div class="name">Combo Purchase</div><div class="desc">Approve or reject merchant-created combos; view the auto-generated ones.</div></div>
+        <div class="admin-row"><div class="name">Logistics</div><div class="desc">The single largest page in the panel — rider and company approvals, live delivery request monitoring, and every logistics setting (bidding windows, radius, price ceilings, commission).</div></div>
+        <div class="admin-row"><div class="name">Feature Services</div><div class="desc">The master switchboard — Buy Together, Save to Buy, Combo Bundles, Custom Fit (including whether its tab even shows in the app), Gifting, Wishlist, Logistics, and the Leaderboard can each be switched on or off platform-wide from this one page, alongside cashback and Custom Fit fee settings.</div></div>
+      </div>
+
+      <p>Admin identity is a simple flag on a profile (<code>admin_status = true</code>) — there's no separate admin login system. The panel itself runs entirely on a public, read-limited key in the browser rather than a privileged server key, relying on database-level rules to keep sensitive tables readable only in the ways the panel actually needs.</p>
+    </section>
+
+    <footer class="colophon">
+      <p>This reference describes the platform as its own code actually behaves, assembled directly from the controllers, database functions, and admin screens that run it — not from marketing copy or the original feature spec. Where a figure is admin-configurable (bid fees, referral amounts, commission splits, badge thresholds), the number shown is the current default rather than a fixed constant, and can be changed from the admin panel at any time.</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  var toggle = document.getElementById('navToggle');
+  var sidebar = document.getElementById('sidebar');
+  toggle.addEventListener('click', function () {
+    var open = sidebar.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  sidebar.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { sidebar.classList.remove('open'); });
+  });
+
+  var filter = document.getElementById('navFilter');
+  filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('[data-group]').forEach(function (group) {
+      var any = false;
+      group.querySelectorAll('li').forEach(function (li) {
+        var match = li.textContent.toLowerCase().indexOf(q) !== -1;
+        li.style.display = match ? '' : 'none';
+        if (match) any = true;
+      });
+      group.style.display = any ? '' : 'none';
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-group a'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var idx = sections.indexOf(entry.target);
+        if (idx === -1) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          links[idx].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    sections.forEach(function (s) { if (s) obs.observe(s); });
+  }
+})();
+</script>
