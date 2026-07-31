@@ -1,0 +1,934 @@
+<title>ZeeFashion — Corporate Concept Note</title>
+<style>
+/* ============ FONTS (system stacks only — no CDN, no silent webfont fallback) ============ */
+:root {
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --bg: #ffffff;
+  --surface: #FAF8FF;
+  --surface-2: #F3E5F5;
+  --border: #EDE7F6;
+  --text: #1A1A2E;
+  --text-2: #4A4658;
+  --muted: #837f92;
+
+  --purple: #6C3483;
+  --purple-d: #4A1480;
+  --gold: #B8791E;
+  --gold-bg: #E8A838;
+  --teal: #0090A8;
+  --teal-bg: #00C3E3;
+
+  --brand: var(--purple);
+  --link: #5A2D70;
+
+  --good: #1E7A46;
+  --warn: #9C5B00;
+  --bad: #B3261E;
+
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07);
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D0D3E;
+    --surface: #14103C;
+    --surface-2: #1D1650;
+    --border: #322A66;
+    --text: #F1EEFB;
+    --text-2: #C9C2E6;
+    --muted: #948DBE;
+
+    --purple: #B58FD1;
+    --purple-d: #D8BCF0;
+    --gold: #F0BB5E;
+    --gold-bg: #F0BB5E;
+    --teal: #4FD9F0;
+    --teal-bg: #4FD9F0;
+
+    --brand: var(--gold);
+    --link: #F0BB5E;
+
+    --good: #5FCB8C;
+    --warn: #F0BB5E;
+    --bad: #F0897E;
+
+    --shadow: 0 3px 18px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D0D3E; --surface: #14103C; --surface-2: #1D1650; --border: #322A66;
+  --text: #F1EEFB; --text-2: #C9C2E6; --muted: #948DBE;
+  --purple: #B58FD1; --purple-d: #D8BCF0; --gold: #F0BB5E; --gold-bg: #F0BB5E;
+  --teal: #4FD9F0; --teal-bg: #4FD9F0; --brand: var(--gold); --link: #F0BB5E;
+  --good: #5FCB8C; --warn: #F0BB5E; --bad: #F0897E;
+  --shadow: 0 3px 18px rgba(0,0,0,0.35);
+}
+:root[data-theme="light"] {
+  --bg: #ffffff; --surface: #FAF8FF; --surface-2: #F3E5F5; --border: #EDE7F6;
+  --text: #1A1A2E; --text-2: #4A4658; --muted: #837f92;
+  --purple: #6C3483; --purple-d: #4A1480; --gold: #B8791E; --gold-bg: #E8A838;
+  --teal: #0090A8; --teal-bg: #00C3E3; --brand: var(--purple); --link: #5A2D70;
+  --good: #1E7A46; --warn: #9C5B00; --bad: #B3261E;
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07);
+}
+
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--surface-2); color: var(--text); }
+
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 2px;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0 0 1em; max-width: 68ch; }
+
+/* ============ LAYOUT ============ */
+.page { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 292px; flex: none;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 22px 16px 40px;
+  scrollbar-width: thin;
+}
+.sidebar-head { padding: 4px 8px 16px; }
+.brand { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; letter-spacing: -0.01em; }
+.brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 2px; }
+
+.nav-filter {
+  width: 100%; padding: 8px 12px; margin: 4px 0 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 0.85rem; font-family: var(--font-body);
+}
+.nav-filter::placeholder { color: var(--muted); }
+
+.nav-group { margin-bottom: 6px; }
+.nav-group-label {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-2); padding: 10px 8px 4px;
+}
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.nav-group ul { list-style: none; margin: 0; padding: 0; }
+.nav-group li a {
+  display: block; padding: 6px 8px 6px 21px; border-radius: 7px;
+  font-size: 0.86rem; color: var(--text-2); text-decoration: none;
+  border-left: 2px solid transparent; margin-left: 3px;
+}
+.nav-group li a:hover { background: var(--surface-2); color: var(--text); }
+.nav-group li a.active { color: var(--text); font-weight: 600; background: var(--surface-2); }
+
+.nav-toggle {
+  display: none; position: fixed; top: 14px; right: 14px; z-index: 40;
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-size: 1.1rem; cursor: pointer;
+}
+
+.content { flex: 1; min-width: 0; padding: 56px 48px 100px; max-width: 980px; }
+.back-link { display: inline-block; font-size: 0.82rem; color: var(--text-2); margin-bottom: 22px; }
+.back-link:hover { color: var(--text); }
+
+/* ============ MASTHEAD ============ */
+.masthead { margin-bottom: 56px; }
+.eyebrow {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--brand); margin-bottom: 14px;
+}
+.masthead h1 { font-size: clamp(2.1rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; margin-bottom: 18px; }
+.masthead .lede { font-size: 1.1rem; color: var(--text-2); max-width: 58ch; }
+
+.stat-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.stat-chip {
+  border: 1px solid var(--border); background: var(--surface);
+  border-radius: 999px; padding: 7px 16px; font-size: 0.82rem; color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.stat-chip b { color: var(--text); font-weight: 700; }
+
+/* ============ SECTIONS ============ */
+.doc-section { margin-bottom: 64px; scroll-margin-top: 24px; }
+.doc-section + .doc-section { padding-top: 8px; border-top: 1px dashed var(--border); }
+
+.section-head { border-left: 3px solid var(--accent); padding-left: 20px; margin-bottom: 28px; }
+.section-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-head h2 { font-size: 1.7rem; font-weight: 600; scroll-margin-top: 24px; }
+.section-head .dek { color: var(--text-2); margin-top: 8px; font-size: 0.98rem; max-width: 62ch; }
+
+.doc-section.accent-purple { --accent: var(--purple); }
+.doc-section.accent-teal   { --accent: var(--teal); }
+.doc-section.accent-gold   { --accent: var(--gold); }
+.doc-section.accent-deep   { --accent: var(--purple-d); }
+
+.sub { margin: 34px 0 16px; }
+.sub h3 {
+  font-family: var(--font-body); font-size: 0.95rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--text);
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+
+/* ============ SHARED COMPONENTS ============ */
+.flow { list-style: none; margin: 18px 0; padding: 0; border-left: 2px solid var(--border); }
+.flow li { position: relative; padding: 2px 0 20px 24px; font-size: 0.95rem; }
+.flow li:last-child { padding-bottom: 2px; }
+.flow li::before {
+  content: ""; position: absolute; left: -5px; top: 6px; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--accent, var(--brand));
+}
+.flow li b { color: var(--text); }
+
+.table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--border); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 420px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { background: var(--surface); font-weight: 700; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-2); }
+tr:last-child td { border-bottom: none; }
+td.num, th.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+.pill-seq { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 18px 0; font-family: var(--font-mono); font-size: 0.82rem; }
+.pill-seq .step {
+  border: 1px solid var(--border); background: var(--surface); border-radius: 999px;
+  padding: 5px 13px; color: var(--text);
+}
+.pill-seq .arrow { color: var(--muted); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+.colophon {
+  margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--muted);
+}
+.colophon p { max-width: 70ch; }
+
+/* ============ PAGE-SPECIFIC COMPONENTS ============ */
+.dot-list { list-style: none; margin: 14px 0; padding: 0; display: grid; gap: 8px; }
+.dot-list li { position: relative; padding-left: 18px; font-size: 0.95rem; color: var(--text-2); }
+.dot-list li::before {
+  content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent, var(--brand));
+}
+
+.num-list { margin: 14px 0; padding-left: 22px; display: grid; gap: 8px; }
+.num-list li { font-size: 0.95rem; color: var(--text-2); padding-left: 4px; }
+.num-list li::marker { color: var(--accent, var(--brand)); font-weight: 700; font-family: var(--font-mono); font-size: 0.85em; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin: 18px 0; }
+.info-card {
+  border: 1px solid var(--border); border-left: 3px solid var(--accent, var(--brand));
+  border-radius: var(--radius); padding: 15px 17px; background: var(--surface);
+}
+.info-card h4 { font-family: var(--font-body); font-size: 0.95rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
+.info-card p { margin: 0; font-size: 0.87rem; color: var(--text-2); }
+.info-card ul { margin: 0; padding: 0; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 18px 0; }
+.stat-card {
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px;
+  background: var(--surface); border-top: 3px solid var(--accent, var(--brand));
+}
+.stat-card .num { font-family: var(--font-display); font-size: 2.1rem; font-weight: 600; line-height: 1; color: var(--text); }
+.stat-card .label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent, var(--brand)); margin: 8px 0 6px; }
+.stat-card p { margin: 0; font-size: 0.85rem; color: var(--text-2); }
+
+.equation {
+  margin: 20px 0; padding: 18px 22px; border: 1px dashed var(--border); border-radius: var(--radius);
+  background: var(--surface); text-align: center; font-family: var(--font-mono);
+  font-size: 1rem; color: var(--text); letter-spacing: 0.01em;
+}
+
+.mission-quote {
+  margin: 26px 0; padding: 26px 30px; border-radius: var(--radius); background: var(--surface-2);
+  border-left: 4px solid var(--purple-d);
+}
+.mission-quote p {
+  font-family: var(--font-display); font-style: italic; font-size: 1.25rem; line-height: 1.5;
+  color: var(--text); margin: 0; max-width: none;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .nav-toggle { display: block; }
+  .sidebar {
+    position: fixed; z-index: 30; top: 0; left: 0; height: 100vh;
+    transform: translateX(-100%); transition: transform 0.22s ease; box-shadow: var(--shadow);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .content { padding: 80px 22px 80px; }
+}
+@media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+</style>
+
+<div class="page">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+  <nav class="sidebar" id="sidebar" aria-label="Table of contents">
+    <div class="sidebar-head">
+      <div class="brand">ZeeFashion</div>
+      <div class="brand-sub">Corporate Concept Note</div>
+    </div>
+    <input class="nav-filter" id="navFilter" type="text" placeholder="Filter sections…" aria-label="Filter sections">
+    <div class="nav-groups" id="navGroups">
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple)"></span>Overview</div>
+        <ul>
+          <li><a href="#company-overview">Company Overview</a></li>
+          <li><a href="#industry-context">Industry Context</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple)"></span>Problem &amp; Solution</div>
+        <ul>
+          <li><a href="#the-problem">The Problem</a></li>
+          <li><a href="#the-solution">The ZeeFashion Solution</a></li>
+          <li><a href="#what-makes-different">What Makes Us Different</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--teal)"></span>Platform</div>
+        <ul>
+          <li><a href="#platform-features">Key Platform Features</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--teal)"></span>Market &amp; Business</div>
+        <ul>
+          <li><a href="#target-market">Target Market</a></li>
+          <li><a href="#business-model">Business Model</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--gold-bg)"></span>Traction &amp; Tech</div>
+        <ul>
+          <li><a href="#current-traction">Current Traction</a></li>
+          <li><a href="#technology">Technology &amp; Infrastructure</a></li>
+          <li><a href="#logistics-fulfillment">Logistics &amp; Fulfillment</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--gold-bg)"></span>Experience</div>
+        <ul>
+          <li><a href="#customer-experience">Customer Experience</a></li>
+          <li><a href="#merchant-experience">Merchant Experience</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple-d)"></span>Strategy &amp; Growth</div>
+        <ul>
+          <li><a href="#competitive-advantage">Competitive Advantage</a></li>
+          <li><a href="#economic-impact">Economic &amp; Ecosystem Impact</a></li>
+          <li><a href="#growth-strategy">Growth Strategy</a></li>
+          <li><a href="#geographic-expansion">Geographic Expansion</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group" data-group>
+        <div class="nav-group-label"><span class="nav-dot" style="background:var(--purple-d)"></span>Partnerships &amp; Outlook</div>
+        <ul>
+          <li><a href="#strategic-opportunities">Strategic Opportunities</a></li>
+          <li><a href="#sustainability">Sustainability</a></li>
+          <li><a href="#long-term-vision">Long-Term Vision</a></li>
+          <li><a href="#corporate-positioning">Corporate Positioning</a></li>
+          <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <a class="back-link" href="index.html">&larr; Back to Operations Reference</a>
+
+    <header class="masthead">
+      <div class="eyebrow">General Corporate Concept Note</div>
+      <h1>Building Digital Infrastructure for Africa's Fashion Economy</h1>
+      <p class="lede">ZeeFashion Ltd is a Nigerian technology company building a digital marketplace and ecosystem for fashion businesses, artisans, and customers — combining marketplace discovery, digital commerce, transaction infrastructure, customer engagement, and logistics connectivity into one platform.</p>
+      <div class="stat-strip">
+        <div class="stat-chip"><b>20</b> artisans onboarded</div>
+        <div class="stat-chip"><b>134</b> users</div>
+        <div class="stat-chip"><b>3</b> logistics partnerships</div>
+        <div class="stat-chip">Live on <b>iOS &amp; Android</b></div>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <section id="company-overview" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Overview</div>
+        <h2>1. Company Overview</h2>
+      </div>
+      <p><strong>ZeeFashion Ltd</strong> is a Nigerian technology company building a digital marketplace and ecosystem for fashion businesses, artisans, and customers.</p>
+      <p>The platform is designed to connect fashion designers, tailors, shoemakers, leather artisans, accessory makers, and other fashion entrepreneurs with customers through an integrated digital commerce experience.</p>
+      <p>ZeeFashion combines <strong>marketplace discovery, digital commerce, transaction infrastructure, customer engagement, and logistics connectivity</strong> to help fashion businesses establish a stronger digital presence and reach customers beyond their immediate geographical markets.</p>
+      <p>For customers, ZeeFashion provides a centralized environment for discovering fashion businesses, purchasing products, requesting customized fashion services, making transactions, tracking deliveries, and engaging with merchants.</p>
+      <p>The company's long-term vision is to become a trusted digital infrastructure layer for fashion commerce across Africa.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="industry-context" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Overview</div>
+        <h2>2. The Industry Context</h2>
+      </div>
+      <p>Africa has a vibrant fashion and creative economy driven by designers, artisans, entrepreneurs, manufacturers, retailers, and consumers.</p>
+      <p>Nigeria is particularly recognized for its diverse fashion culture, entrepreneurial activity, creative talent, and growing adoption of digital technologies.</p>
+      <p>However, a significant portion of fashion commerce remains fragmented. Many fashion businesses rely on combinations of:</p>
+      <ul class="dot-list">
+        <li>Physical stores</li>
+        <li>Referrals</li>
+        <li>Social media</li>
+        <li>Messaging applications</li>
+        <li>Informal payment arrangements</li>
+        <li>Independent delivery services</li>
+      </ul>
+      <p>These channels can help businesses operate, but they often lack the integrated infrastructure required to support efficient discovery, transactions, fulfillment, customer management, and business growth. ZeeFashion is positioned within this gap.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="the-problem" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Problem &amp; Solution</div>
+        <h2>3. The Problem</h2>
+        <p class="dek">Fashion entrepreneurs can possess exceptional creative and production capabilities while still facing significant barriers to growth.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card"><h4>Limited Customer Reach</h4><p>Many artisans primarily serve people within their local communities or existing social networks.</p></div>
+        <div class="info-card"><h4>Lack of Structured Digital Commerce</h4><p>Social media can generate visibility, but it is not necessarily designed to manage the complete commerce journey from discovery to purchase and fulfillment.</p></div>
+        <div class="info-card"><h4>Trust and Transaction Concerns</h4><p>Customers may hesitate to transact with unfamiliar businesses due to concerns around reliability, quality, payments, fulfillment, and accountability.</p></div>
+        <div class="info-card"><h4>Fragmented Logistics</h4><p>Merchants who receive orders from customers in other cities may struggle to efficiently coordinate delivery.</p></div>
+        <div class="info-card"><h4>Customer Retention</h4><p>Small businesses often lack structured tools for maintaining relationships with customers and encouraging repeat purchases.</p></div>
+        <div class="info-card"><h4>Limited Digital Infrastructure</h4><p>Many emerging fashion businesses need accessible tools that allow them to transition from informal digital selling to structured online commerce.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="the-solution" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Problem &amp; Solution</div>
+        <h2>4. The ZeeFashion Solution</h2>
+        <p class="dek">ZeeFashion brings the major elements of fashion commerce into a unified digital ecosystem.</p>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="sub"><h3>The platform enables fashion businesses to</h3></div>
+          <ul class="dot-list">
+            <li>Establish digital storefronts</li>
+            <li>Showcase products and services</li>
+            <li>Reach new customers</li>
+            <li>Receive orders</li>
+            <li>Manage transactions</li>
+            <li>Build verified reputations</li>
+            <li>Engage customers</li>
+            <li>Promote products</li>
+            <li>Connect with delivery services</li>
+            <li>Expand their market reach</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sub"><h3>Customers can</h3></div>
+          <ul class="dot-list">
+            <li>Discover fashion businesses</li>
+            <li>Browse products</li>
+            <li>Purchase fashion items</li>
+            <li>Request customized outfits</li>
+            <li>Make transactions</li>
+            <li>Track deliveries</li>
+            <li>Review businesses</li>
+            <li>Save products</li>
+            <li>Gift products</li>
+            <li>Participate in group purchasing</li>
+            <li>Access promotional opportunities</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sub"><h3>The platform is therefore designed around the complete commerce journey</h3></div>
+      <div class="pill-seq">
+        <span class="step">Discover</span><span class="arrow">&rarr;</span>
+        <span class="step">Engage</span><span class="arrow">&rarr;</span>
+        <span class="step">Purchase</span><span class="arrow">&rarr;</span>
+        <span class="step">Transact</span><span class="arrow">&rarr;</span>
+        <span class="step">Fulfill</span><span class="arrow">&rarr;</span>
+        <span class="step">Deliver</span><span class="arrow">&rarr;</span>
+        <span class="step">Review</span><span class="arrow">&rarr;</span>
+        <span class="step">Return</span>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="what-makes-different" class="doc-section accent-purple">
+      <div class="section-head">
+        <div class="section-eyebrow">Problem &amp; Solution</div>
+        <h2>5. What Makes ZeeFashion Different</h2>
+        <p class="dek">ZeeFashion is designed to be more than a conventional online marketplace — its approach combines several components of the fashion commerce ecosystem.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card"><h4>Marketplace</h4><p>A digital environment where fashion businesses can showcase products and services and connect with customers.</p></div>
+        <div class="info-card"><h4>Trust</h4><p>Ratings, reviews, merchant profiles, transaction mechanisms, and customer support help create a more reliable commerce environment.</p></div>
+        <div class="info-card"><h4>Commerce</h4><p>ZeeFashion provides tools and infrastructure supporting the purchasing and transaction process.</p></div>
+        <div class="info-card"><h4>Customer Engagement</h4><p>Wishlists, gifting, promotions, gamification, and other engagement mechanisms are designed to encourage interaction and repeat purchases.</p></div>
+        <div class="info-card"><h4>Social Commerce</h4><p>Features such as <b>Buy Together</b> allow customers to participate in group purchasing experiences.</p></div>
+        <div class="info-card"><h4>Personalized Fashion</h4><p>Through <b>Custom Outfits</b>, customers can engage fashion professionals for personalized clothing requirements.</p></div>
+        <div class="info-card"><h4>Logistics Connectivity</h4><p>ZeeFashion is designed to connect commerce with delivery infrastructure, allowing merchants to serve customers across different locations.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="platform-features" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Platform</div>
+        <h2>6. Key Platform Features</h2>
+      </div>
+      <div class="card-grid">
+        <div class="info-card"><h4>Digital Marketplace</h4><p>Fashion businesses can create their presence on ZeeFashion and showcase their products or services to potential customers.</p></div>
+        <div class="info-card"><h4>Zee Wallet</h4><p>A wallet and transaction ecosystem designed to support trusted commerce and facilitate transactions within the platform.</p></div>
+        <div class="info-card"><h4>Verified Ratings and Reviews</h4><p>Customers can provide feedback that contributes to transparency and helps other users make informed purchasing decisions.</p></div>
+        <div class="info-card"><h4>Delivery Tracking</h4><p>Customers can receive visibility into the movement and status of their orders through integrated delivery functionality.</p></div>
+        <div class="info-card"><h4>Custom Outfits</h4><p>Customers can request customized fashion products rather than being restricted to standard catalog items.</p></div>
+        <div class="info-card"><h4>Gifting</h4><p>Customers can purchase fashion products for friends, family, and other recipients.</p></div>
+        <div class="info-card"><h4>Wishlist</h4><p>Customers can save products they are interested in purchasing later.</p></div>
+        <div class="info-card"><h4>Save to Buy</h4><p>Customers can save toward products they intend to purchase in the future, supporting planned purchases and customer retention.</p></div>
+        <div class="info-card"><h4>Buy Together</h4><p>Customers can participate in group purchasing opportunities, introducing a social dimension to online fashion commerce.</p></div>
+        <div class="info-card"><h4>Cashback and Discounts</h4><p>Promotional mechanisms can enable eligible customers to receive cashback benefits that can be used toward future purchases.</p></div>
+        <div class="info-card"><h4>Combo Purchases</h4><p>Customers can combine related products in a single purchase, providing opportunities for merchants to increase order value.</p></div>
+        <div class="info-card"><h4>Coupons and Influencer Codes</h4><p>Merchants and marketing partners can use promotional codes to support customer acquisition and promotional campaigns.</p></div>
+        <div class="info-card"><h4>Gamification</h4><p>Engagement mechanisms such as leaderboards and rewards can encourage users to interact with the platform and participate in campaigns.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="target-market" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Market &amp; Business</div>
+        <h2>7. Target Market</h2>
+        <p class="dek">ZeeFashion serves multiple participants within the fashion ecosystem.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card">
+          <h4>Fashion Businesses</h4>
+          <ul class="dot-list">
+            <li>Designers</li><li>Tailors</li><li>Shoemakers</li><li>Leather artisans</li>
+            <li>Accessory makers</li><li>Fashion retailers</li><li>Creative artisans</li>
+            <li>Emerging fashion entrepreneurs</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Customers</h4>
+          <p>Individuals looking to discover, purchase, customize, gift, or save toward fashion products and services.</p>
+        </div>
+        <div class="info-card">
+          <h4>Ecosystem Partners</h4>
+          <ul class="dot-list">
+            <li>Logistics companies</li><li>Delivery providers</li><li>Payment providers</li>
+            <li>Financial institutions</li><li>Fashion organizations</li><li>Technology companies</li>
+            <li>Brands</li><li>Influencers</li><li>Creative communities</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="business-model" class="doc-section accent-teal">
+      <div class="section-head">
+        <div class="section-eyebrow">Market &amp; Business</div>
+        <h2>8. Business Model</h2>
+        <p class="dek">ZeeFashion operates a multi-channel commercial model designed to support long-term sustainability.</p>
+      </div>
+
+      <div class="sub"><h3>Transaction Revenue</h3></div>
+      <p>ZeeFashion can earn commissions from eligible transactions completed through the platform.</p>
+
+      <div class="sub"><h3>Merchant Subscriptions</h3></div>
+      <p>Businesses can access subscription plans offering additional capabilities and benefits.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plan</th><th class="num">Price</th></tr></thead>
+          <tbody>
+            <tr><td>Starter</td><td class="num">Free</td></tr>
+            <tr><td>Pro</td><td class="num">&#8358;3,000 / month</td></tr>
+            <tr><td>Enterprise</td><td class="num">&#8358;10,000 / month</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub"><h3>Merchant Services</h3></div>
+      <p>Additional services may be provided to businesses as the platform expands its merchant ecosystem.</p>
+
+      <div class="sub"><h3>Promotional Services</h3></div>
+      <p>Businesses and partners can leverage promotional and marketing opportunities within the ZeeFashion ecosystem.</p>
+
+      <div class="sub"><h3>Strategic Partnerships</h3></div>
+      <p>Commercial opportunities can be developed through partnerships with logistics providers, payment companies, financial institutions, technology companies, brands, and other ecosystem participants.</p>
+
+      <p>The objective is to develop diversified revenue streams that scale alongside platform activity.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="current-traction" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Traction &amp; Tech</div>
+        <h2>9. Current Traction</h2>
+        <p class="dek">ZeeFashion has progressed beyond the conceptual stage and has established an operational platform.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="num">20</div>
+          <div class="label">Artisans Onboarded</div>
+          <p>ZeeFashion has begun establishing its merchant ecosystem with fashion businesses already participating on the platform.</p>
+        </div>
+        <div class="stat-card">
+          <div class="num">134</div>
+          <div class="label">Users</div>
+          <p>The platform has an initial user base upon which customer acquisition and engagement can continue to grow.</p>
+        </div>
+        <div class="stat-card">
+          <div class="num">3</div>
+          <div class="label">Logistics Partnerships</div>
+          <p>An initial foundation for delivery and interstate fulfillment.</p>
+        </div>
+        <div class="stat-card">
+          <div class="num">iOS &amp; Android</div>
+          <div class="label">Mobile Applications</div>
+          <p>Available on both Google Play Store and Apple App Store, providing customers with mobile access to the platform.</p>
+        </div>
+      </div>
+      <p>These early indicators provide an initial foundation for further merchant acquisition, customer growth, and ecosystem development.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="technology" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Traction &amp; Tech</div>
+        <h2>10. Technology and Digital Infrastructure</h2>
+        <p class="dek">Technology is at the center of ZeeFashion's operating model.</p>
+      </div>
+      <p>The platform is designed to bring together multiple components of digital commerce, including:</p>
+      <ul class="dot-list">
+        <li>Marketplace infrastructure</li>
+        <li>Mobile applications</li>
+        <li>Merchant management</li>
+        <li>Customer accounts</li>
+        <li>Product discovery</li>
+        <li>Transaction processing</li>
+        <li>Order management</li>
+        <li>Delivery connectivity</li>
+        <li>Tracking</li>
+        <li>Ratings and reviews</li>
+        <li>Customer engagement</li>
+        <li>Promotional mechanisms</li>
+        <li>Data and analytics</li>
+      </ul>
+      <p>ZeeFashion's technology roadmap focuses on improving platform reliability, user experience, security, scalability, merchant capabilities, and integration with complementary digital services.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="logistics-fulfillment" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Traction &amp; Tech</div>
+        <h2>11. Logistics and Fulfillment</h2>
+        <p class="dek">A major component of ZeeFashion's strategy is addressing the gap between online commerce and physical fulfillment.</p>
+      </div>
+      <p>A customer may be able to discover a product online, but the transaction is only successful when the merchant can fulfill the order and the customer receives it.</p>
+      <p>ZeeFashion therefore seeks to build stronger connections between its marketplace and logistics ecosystem. Current partnerships with three logistics providers provide an initial foundation for this strategy.</p>
+      <p>Over time, ZeeFashion intends to expand logistics integrations and coverage to make it easier for merchants to serve customers across Nigeria and, eventually, other African markets.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="customer-experience" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Experience</div>
+        <h2>12. Customer Experience</h2>
+        <p class="dek">ZeeFashion is designed around the customer journey rather than simply the product listing.</p>
+      </div>
+      <ul class="flow">
+        <li><b>Discovery</b> — Customers discover fashion businesses and products.</li>
+        <li><b>Evaluation</b> — Customers can review product information, merchant profiles, ratings, and other available information.</li>
+        <li><b>Purchase</b> — Customers can initiate and complete purchases through the platform.</li>
+        <li><b>Fulfillment</b> — Orders are processed and connected to delivery infrastructure.</li>
+        <li><b>Tracking</b> — Customers can monitor delivery progress.</li>
+        <li><b>Feedback</b> — Customers can provide ratings and reviews.</li>
+        <li><b>Retention</b> — Wishlists, gifting, promotions, Save to Buy, Buy Together, gamification, and other features create additional reasons for customers to return.</li>
+      </ul>
+      <p>This creates an ecosystem designed to support both <strong>transactional and long-term customer relationships</strong>.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="merchant-experience" class="doc-section accent-gold">
+      <div class="section-head">
+        <div class="section-eyebrow">Experience</div>
+        <h2>13. Merchant Experience</h2>
+        <p class="dek">ZeeFashion also seeks to improve the experience of the businesses operating on the platform. A merchant can use the ecosystem to:</p>
+      </div>
+      <ol class="num-list">
+        <li>Establish a digital presence</li>
+        <li>Display products and services</li>
+        <li>Reach new customers</li>
+        <li>Receive orders</li>
+        <li>Manage transactions</li>
+        <li>Connect to delivery services</li>
+        <li>Build customer trust</li>
+        <li>Promote products</li>
+        <li>Encourage repeat purchases</li>
+        <li>Expand beyond their immediate market</li>
+      </ol>
+      <p>This approach positions ZeeFashion as a potential <strong>growth infrastructure provider for fashion entrepreneurs</strong>, rather than simply another channel for listing products.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="competitive-advantage" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Strategy &amp; Growth</div>
+        <h2>14. Competitive Advantage</h2>
+        <p class="dek">ZeeFashion's competitive positioning is based on its integrated approach to fashion commerce.</p>
+      </div>
+      <p>Rather than focusing only on product discovery, ZeeFashion seeks to connect:</p>
+      <div class="equation">Merchants + Customers + Commerce + Trust + Engagement + Logistics</div>
+      <p>The platform's combination of marketplace functionality, personalized fashion services, social commerce, customer engagement, transaction infrastructure, and logistics connectivity creates multiple points of value for users. The more merchants and customers participate, the greater the potential value of the ecosystem.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="economic-impact" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Strategy &amp; Growth</div>
+        <h2>15. Economic and Ecosystem Impact</h2>
+        <p class="dek">ZeeFashion's commercial activities can contribute to the wider fashion and creative economy by helping businesses access new markets and digital tools.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card"><h4>Digital Inclusion</h4><p>Helping traditionally offline or socially-driven businesses establish a structured digital presence.</p></div>
+        <div class="info-card"><h4>Market Access</h4><p>Allowing merchants to potentially reach customers beyond their immediate geographic locations.</p></div>
+        <div class="info-card"><h4>Entrepreneurship</h4><p>Supporting individuals who are building fashion businesses and creative enterprises.</p></div>
+        <div class="info-card"><h4>Income Generation</h4><p>Increased business activity can contribute to additional income opportunities for merchants and participants throughout the value chain.</p></div>
+        <div class="info-card"><h4>Employment</h4><p>Growth in fashion businesses can increase demand for employees, apprentices, delivery providers, marketers, customer support personnel, and other supporting roles.</p></div>
+        <div class="info-card"><h4>Creative Visibility</h4><p>Providing greater digital visibility for local fashion businesses and artisans.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="growth-strategy" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Strategy &amp; Growth</div>
+        <h2>16. Growth Strategy</h2>
+        <p class="dek">ZeeFashion's growth strategy is built around expanding both sides of its marketplace.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card">
+          <h4>Merchant Growth</h4>
+          <ul class="dot-list">
+            <li>Direct merchant acquisition</li><li>Fashion community partnerships</li>
+            <li>Merchant referrals</li><li>Digital onboarding</li><li>Fashion events and activations</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Customer Growth</h4>
+          <ul class="dot-list">
+            <li>Digital marketing</li><li>Social media</li><li>Influencer partnerships</li>
+            <li>Referral programs</li><li>Merchant-led acquisition</li><li>Promotional campaigns</li><li>Social commerce</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Ecosystem Growth</h4>
+          <ul class="dot-list">
+            <li>Logistics providers</li><li>Payment companies</li><li>Financial institutions</li>
+            <li>Fashion organizations</li><li>Technology providers</li><li>Brands</li><li>Strategic partners</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="geographic-expansion" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Strategy &amp; Growth</div>
+        <h2>17. Geographic Expansion</h2>
+      </div>
+      <p>ZeeFashion's immediate focus is Nigeria. The Nigerian market provides an important foundation for testing, strengthening, and scaling the company's marketplace, merchant onboarding processes, customer acquisition model, logistics integrations, and operational infrastructure.</p>
+      <p>As the platform achieves stronger product-market validation and operational scale, ZeeFashion's long-term strategy is to expand into additional African markets. Expansion will be guided by factors including:</p>
+      <ul class="dot-list">
+        <li>Market demand</li>
+        <li>Fashion ecosystem maturity</li>
+        <li>Digital adoption</li>
+        <li>Logistics availability</li>
+        <li>Payment infrastructure</li>
+        <li>Regulatory considerations</li>
+        <li>Strategic partnerships</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="strategic-opportunities" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Partnerships &amp; Outlook</div>
+        <h2>18. Strategic Opportunities</h2>
+        <p class="dek">ZeeFashion's ecosystem creates opportunities for collaboration with organizations across multiple sectors.</p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card"><h4>Logistics</h4><p>Integration with delivery providers can expand fulfillment capabilities and geographic coverage.</p></div>
+        <div class="info-card"><h4>Financial Services</h4><p>Partnerships can create opportunities around payments, merchant financial services, savings, working capital, and other relevant financial products.</p></div>
+        <div class="info-card"><h4>Technology</h4><p>Technology partnerships can strengthen infrastructure, analytics, identity, security, communication, and other platform capabilities.</p></div>
+        <div class="info-card"><h4>Fashion Organizations</h4><p>Associations and communities can help accelerate merchant acquisition, training, and ecosystem development.</p></div>
+        <div class="info-card"><h4>Brands</h4><p>Brands can collaborate with ZeeFashion through campaigns, promotions, sponsorships, and customer engagement initiatives.</p></div>
+        <div class="info-card"><h4>Government &amp; Development Organizations</h4><p>ZeeFashion can support programs focused on entrepreneurship, digital inclusion, youth empowerment, SME development, and the creative economy.</p></div>
+        <div class="info-card"><h4>Educational Institutions</h4><p>Partnerships can create pathways for digital entrepreneurship, fashion technology, skills development, and practical business opportunities.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="sustainability" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Partnerships &amp; Outlook</div>
+        <h2>19. Sustainability</h2>
+      </div>
+      <p>ZeeFashion is structured as a commercially driven technology company. Its long-term sustainability is expected to come from diversified revenue streams including:</p>
+      <ul class="dot-list">
+        <li>Transaction commissions</li>
+        <li>Merchant subscriptions</li>
+        <li>Merchant services</li>
+        <li>Promotional services</li>
+        <li>Strategic partnerships</li>
+        <li>Additional digital commerce offerings</li>
+      </ul>
+      <p>This model allows the company to pursue both commercial growth and ecosystem development.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="long-term-vision" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Partnerships &amp; Outlook</div>
+        <h2>20. Long-Term Vision</h2>
+        <p class="dek">ZeeFashion's long-term vision is to become one of Africa's trusted digital platforms for fashion commerce.</p>
+      </div>
+      <p>The company envisions an ecosystem where a fashion entrepreneur can:</p>
+      <div class="pill-seq">
+        <span class="step">Create</span><span class="arrow">&rarr;</span>
+        <span class="step">Showcase</span><span class="arrow">&rarr;</span>
+        <span class="step">Sell</span><span class="arrow">&rarr;</span>
+        <span class="step">Receive Payment</span><span class="arrow">&rarr;</span>
+        <span class="step">Fulfill</span><span class="arrow">&rarr;</span>
+        <span class="step">Deliver</span><span class="arrow">&rarr;</span>
+        <span class="step">Build Reputation</span><span class="arrow">&rarr;</span>
+        <span class="step">Retain Customers</span><span class="arrow">&rarr;</span>
+        <span class="step">Grow</span>
+      </div>
+      <p>without having to build every component independently. ZeeFashion ultimately seeks to create a digital infrastructure layer connecting the fragmented parts of the fashion economy. The long-term ecosystem can connect:</p>
+      <ul class="flow">
+        <li>Fashion Businesses</li>
+        <li>Customers</li>
+        <li>Payments</li>
+        <li>Logistics</li>
+        <li>Marketing</li>
+        <li>Business Tools</li>
+        <li>Data &amp; Insights</li>
+      </ul>
+      <p>This creates the potential for ZeeFashion to support the growth and digital transformation of fashion businesses at scale.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="corporate-positioning" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Partnerships &amp; Outlook</div>
+        <h2>21. Corporate Positioning</h2>
+      </div>
+      <p>ZeeFashion is positioned at the intersection of:</p>
+      <ul class="dot-list">
+        <li>Technology</li>
+        <li>E-commerce</li>
+        <li>Fashion</li>
+        <li>Creative industries</li>
+        <li>Entrepreneurship</li>
+        <li>Logistics</li>
+        <li>Digital financial services</li>
+        <li>Customer experience</li>
+      </ul>
+      <p>Its model allows the company to work across multiple sectors while maintaining a clear core purpose: <strong>enabling fashion commerce through technology.</strong></p>
+    </section>
+
+    <!-- ============================================================ -->
+    <section id="conclusion" class="doc-section accent-deep">
+      <div class="section-head">
+        <div class="section-eyebrow">Partnerships &amp; Outlook</div>
+        <h2>22. Conclusion</h2>
+      </div>
+      <p>ZeeFashion Ltd is building a digital ecosystem designed to make fashion commerce more accessible, connected, trusted, and scalable.</p>
+      <p>By combining marketplace discovery, digital commerce, transaction infrastructure, customer engagement, personalized fashion services, and logistics connectivity, ZeeFashion provides fashion businesses with more than another sales channel — it provides an opportunity to build a structured digital business.</p>
+      <p>For customers, ZeeFashion creates a centralized environment for discovering fashion businesses, purchasing products, accessing customized services, making transactions, and receiving orders. For merchants, it provides digital market access, commerce tools, customer engagement capabilities, and connections to fulfillment infrastructure. For ecosystem partners, it provides an opportunity to participate in the growth of a technology-enabled fashion economy.</p>
+      <p>With its early traction of <strong>20 artisans, 134 users, three logistics partnerships, and applications across Android and iOS</strong>, ZeeFashion has established an initial foundation from which it intends to scale.</p>
+      <p>The company's ambition is ultimately regional:</p>
+      <div class="mission-quote">
+        <p>To build digital infrastructure that enables African fashion businesses to reach more customers, conduct trusted commerce, and grow beyond geographical limitations.</p>
+      </div>
+    </section>
+
+    <footer class="colophon">
+      <p>This concept note describes ZeeFashion's corporate vision, strategy, and current traction as prepared for general audiences and stakeholders. Figures such as merchant count, user count, and partnership count reflect the numbers current at time of writing and will change as the platform grows.</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  var toggle = document.getElementById('navToggle');
+  var sidebar = document.getElementById('sidebar');
+  toggle.addEventListener('click', function () {
+    var open = sidebar.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  sidebar.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function () { sidebar.classList.remove('open'); });
+  });
+
+  var filter = document.getElementById('navFilter');
+  filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('[data-group]').forEach(function (group) {
+      var any = false;
+      group.querySelectorAll('li').forEach(function (li) {
+        var match = li.textContent.toLowerCase().indexOf(q) !== -1;
+        li.style.display = match ? '' : 'none';
+        if (match) any = true;
+      });
+      group.style.display = any ? '' : 'none';
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-group a[href^="#"]'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var idx = sections.indexOf(entry.target);
+        if (idx === -1) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          links[idx].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    sections.forEach(function (s) { if (s) obs.observe(s); });
+  }
+})();
+</script>
