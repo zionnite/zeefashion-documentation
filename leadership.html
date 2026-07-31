@@ -1,0 +1,573 @@
+<title>ZeeFashion — Founding Leadership Team</title>
+<style>
+/* ============ FONTS (system stacks only — no CDN, no silent webfont fallback) ============ */
+:root {
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ===== Light theme tokens — ZeeFashion's own brand palette (mirrors index.html) ===== */
+  --bg: #ffffff;
+  --surface: #FAF8FF;
+  --surface-2: #F3E5F5;
+  --border: #EDE7F6;
+  --text: #1A1A2E;
+  --text-2: #4A4658;
+  --muted: #837f92;
+
+  --purple: #6C3483;
+  --purple-d: #4A1480;
+  --gold: #B8791E;
+  --gold-bg: #E8A838;
+  --teal: #0090A8;
+  --teal-bg: #00C3E3;
+
+  --brand: var(--purple);
+  --link: #5A2D70;
+
+  --good: #1E7A46;
+  --warn: #9C5B00;
+  --bad: #B3261E;
+
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07);
+  --shadow-lg: 0 14px 40px rgba(74, 20, 128, 0.12);
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D0D3E;
+    --surface: #14103C;
+    --surface-2: #1D1650;
+    --border: #322A66;
+    --text: #F1EEFB;
+    --text-2: #C9C2E6;
+    --muted: #948DBE;
+
+    --purple: #B58FD1;
+    --purple-d: #D8BCF0;
+    --gold: #F0BB5E;
+    --gold-bg: #F0BB5E;
+    --teal: #4FD9F0;
+    --teal-bg: #4FD9F0;
+
+    --brand: var(--gold);
+    --link: #F0BB5E;
+
+    --good: #5FCB8C;
+    --warn: #F0BB5E;
+    --bad: #F0897E;
+
+    --shadow: 0 3px 18px rgba(0,0,0,0.35);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.45);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D0D3E; --surface: #14103C; --surface-2: #1D1650; --border: #322A66;
+  --text: #F1EEFB; --text-2: #C9C2E6; --muted: #948DBE;
+  --purple: #B58FD1; --purple-d: #D8BCF0; --gold: #F0BB5E; --gold-bg: #F0BB5E;
+  --teal: #4FD9F0; --teal-bg: #4FD9F0; --brand: var(--gold); --link: #F0BB5E;
+  --good: #5FCB8C; --warn: #F0BB5E; --bad: #F0897E;
+  --shadow: 0 3px 18px rgba(0,0,0,0.35); --shadow-lg: 0 20px 60px rgba(0,0,0,0.45);
+}
+:root[data-theme="light"] {
+  --bg: #ffffff; --surface: #FAF8FF; --surface-2: #F3E5F5; --border: #EDE7F6;
+  --text: #1A1A2E; --text-2: #4A4658; --muted: #837f92;
+  --purple: #6C3483; --purple-d: #4A1480; --gold: #B8791E; --gold-bg: #E8A838;
+  --teal: #0090A8; --teal-bg: #00C3E3; --brand: var(--purple); --link: #5A2D70;
+  --good: #1E7A46; --warn: #9C5B00; --bad: #B3261E;
+  --shadow: 0 3px 14px rgba(74, 20, 128, 0.07); --shadow-lg: 0 14px 40px rgba(74, 20, 128, 0.12);
+}
+
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--surface-2); color: var(--text); }
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 2px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0 0 1em; max-width: 68ch; }
+
+/* ============ LAYOUT ============ */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 56px 48px 100px; }
+@media (max-width: 720px) { .wrap { padding: 40px 22px 80px; } }
+
+.back-link { display: inline-block; font-size: 0.82rem; color: var(--text-2); margin-bottom: 22px; }
+.back-link:hover { color: var(--text); }
+
+/* ============ MASTHEAD (mirrors index.html) ============ */
+.masthead { margin-bottom: 56px; }
+.eyebrow {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--brand); margin-bottom: 14px;
+}
+.masthead h1 { font-size: clamp(2.1rem, 4vw, 3rem); font-weight: 600; line-height: 1.1; margin-bottom: 18px; }
+.masthead .lede { font-size: 1.1rem; color: var(--text-2); max-width: 62ch; }
+
+.stat-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.stat-chip {
+  border: 1px solid var(--border); background: var(--surface); border-radius: 999px;
+  padding: 7px 16px; font-size: 0.82rem; color: var(--text-2); font-variant-numeric: tabular-nums;
+}
+.stat-chip b { color: var(--text); font-weight: 700; }
+
+/* ============ GROUP BLOCKS ============ */
+.group-block { margin-bottom: 48px; }
+.group-block + .group-block { padding-top: 8px; border-top: 1px dashed var(--border); }
+.group-label {
+  display: flex; align-items: center; gap: 8px; font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-2); margin-bottom: 18px;
+}
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+/* ============ CEO SPOTLIGHT ============ */
+.spotlight {
+  border: 1px solid var(--border); border-left: 3px solid var(--purple);
+  background: var(--surface); border-radius: var(--radius-lg); padding: 26px 28px;
+  margin-bottom: 44px; cursor: pointer; transition: box-shadow .18s ease, transform .18s ease;
+}
+.spotlight:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.spotlight .role-tag {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple);
+}
+.spotlight .name { font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; margin: 6px 0 8px; }
+.spotlight p { color: var(--text-2); margin-bottom: 0; }
+
+/* ============ LEADER GRID / CARDS ============ */
+.leader-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .leader-grid { grid-template-columns: 1fr; } }
+
+.leader-card {
+  border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-lg);
+  padding: 20px 22px; cursor: pointer; transition: box-shadow .18s ease, transform .18s ease;
+}
+.leader-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.leader-card.accent-purple { border-left: 3px solid var(--purple); }
+.leader-card.accent-teal   { border-left: 3px solid var(--teal); }
+.leader-card.accent-gold   { border-left: 3px solid var(--gold); }
+.leader-card.accent-deep   { border-left: 3px solid var(--purple-d); }
+.leader-card.vacant { border-left-style: dashed; opacity: 0.82; }
+
+.leader-card .role-tag {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+}
+.accent-purple .role-tag { color: var(--purple); }
+.accent-teal   .role-tag { color: var(--teal); }
+.accent-gold   .role-tag { color: var(--gold); }
+.accent-deep   .role-tag { color: var(--purple-d); }
+
+.leader-card .name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; margin: 5px 0 8px; }
+.leader-card p { font-size: 0.9rem; color: var(--text-2); margin-bottom: 0; }
+
+.vacant-pill {
+  display: inline-block; margin-top: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted); border: 1px dashed var(--border); border-radius: 999px; padding: 3px 10px;
+}
+
+.view-role {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+  color: var(--link); font-size: 0.78rem; font-weight: 700;
+}
+.view-role span { transition: transform .18s; }
+.leader-card:hover .view-role span, .spotlight:hover .view-role span { transform: translateX(3px); }
+
+/* ============ MODAL ============ */
+.modal {
+  position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center;
+  padding: 22px; background: rgba(13, 13, 62, 0.55); backdrop-filter: blur(6px);
+}
+.modal.open { display: flex; }
+.modal-panel {
+  width: min(820px, 100%); max-height: min(88vh, 900px); overflow: auto;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); animation: modalIn .2s ease-out;
+}
+@keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.modal-header {
+  padding: 28px 30px 24px; color: var(--text);
+  background: var(--surface-2); border-top: 3px solid var(--purple);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.modal-header .modal-role {
+  font-family: var(--font-body); text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 0.72rem; font-weight: 700; color: var(--purple); margin-bottom: 8px;
+}
+.modal-header h2 { margin: 0; font-size: 1.9rem; color: var(--text); }
+.modal-header p { margin: 10px 46px 0 0; color: var(--text-2); max-width: 620px; }
+
+.close-modal {
+  position: absolute; right: 18px; top: 18px; width: 38px; height: 38px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text-2);
+  border-radius: 50%; font-size: 20px; cursor: pointer; line-height: 1;
+}
+.close-modal:hover { background: var(--surface-2); color: var(--text); }
+
+.modal-body { padding: 26px 30px 32px; }
+.detail-intro {
+  padding: 16px 18px; border-radius: var(--radius); background: var(--surface);
+  border-left: 3px solid var(--purple); margin-bottom: 26px; font-size: 0.93rem;
+}
+.detail-intro strong { display: block; margin-bottom: 5px; font-family: var(--font-body); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--purple); }
+.detail-intro p { margin: 0; color: var(--text-2); }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.detail-section { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; background: var(--surface); }
+.detail-section h3 {
+  font-family: var(--font-body); margin: 0 0 10px; font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2);
+}
+.detail-section ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.detail-section li { position: relative; padding-left: 15px; font-size: 0.85rem; color: var(--text-2); }
+.detail-section li::before {
+  content: ""; position: absolute; left: 0; top: 0.55em; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--purple);
+}
+
+/* ============ COLOPHON ============ */
+.colophon { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--muted); }
+.colophon p { max-width: 70ch; }
+</style>
+
+<div class="wrap">
+
+  <a class="back-link" href="index.html">&larr; Back to Operations Reference</a>
+
+  <header class="masthead">
+    <div class="eyebrow">Founding Leadership</div>
+    <h1>The People Behind ZeeFashion</h1>
+    <p class="lede">A clear view of who owns what — vision, technology, operations, growth, creative direction, customer experience, finance, legal and public relations. Click any name for the full role breakdown.</p>
+    <div class="stat-strip">
+      <div class="stat-chip"><b>11</b> leadership seats</div>
+      <div class="stat-chip"><b>8</b> filled</div>
+      <div class="stat-chip"><b>3</b> open</div>
+      <div class="stat-chip">1 <b>CEO / CTO</b></div>
+    </div>
+  </header>
+
+  <!-- CEO -->
+  <section class="spotlight" tabindex="0" role="button" data-role="zionnite" aria-label="View Zionnite role details">
+    <div class="role-tag">Chief Executive &amp; Technology Officer</div>
+    <div class="name">Zionnite</div>
+    <p>Leads the overall vision, strategic direction, technology, product development and long-term growth of ZeeFashion.</p>
+    <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+  </section>
+
+  <!-- Vision & Operations -->
+  <div class="group-block">
+    <div class="group-label"><span class="nav-dot" style="background:var(--purple)"></span>Vision &amp; Operations</div>
+    <div class="leader-grid">
+
+      <article class="leader-card accent-purple" tabindex="0" role="button" data-role="ronke" aria-label="View Ronke role details">
+        <div class="role-tag">Chief Operating Officer</div>
+        <div class="name">Ronke</div>
+        <p>Owns operational execution and ensures the business runs efficiently and scales sustainably.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-purple" tabindex="0" role="button" data-role="stella" aria-label="View Stella role details">
+        <div class="role-tag">Chief Logistics Officer</div>
+        <div class="name">Stella</div>
+        <p>Owns logistics strategy, fulfillment coordination and delivery performance across ZeeFashion.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- Growth & Marketing -->
+  <div class="group-block">
+    <div class="group-label"><span class="nav-dot" style="background:var(--gold-bg)"></span>Growth &amp; Marketing</div>
+    <div class="leader-grid">
+
+      <article class="leader-card accent-gold" tabindex="0" role="button" data-role="desire" aria-label="View Desire role details">
+        <div class="role-tag">Chief Marketing Officer</div>
+        <div class="name">Desire</div>
+        <p>Owns marketing strategy, customer acquisition, brand growth and marketing performance.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-gold" tabindex="0" role="button" data-role="silver" aria-label="View Silver role details">
+        <div class="role-tag">Public Relations Lead</div>
+        <div class="name">Silver</div>
+        <p>Manages ZeeFashion's public image, media relationships, reputation and external communications.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- Creative & Content -->
+  <div class="group-block">
+    <div class="group-label"><span class="nav-dot" style="background:var(--teal-bg)"></span>Creative &amp; Content</div>
+    <div class="leader-grid">
+
+      <article class="leader-card accent-teal" tabindex="0" role="button" data-role="jubilee" aria-label="View Jubilee role details">
+        <div class="role-tag">Chief Creative Officer</div>
+        <div class="name">Jubilee</div>
+        <p>Leads ZeeFashion's visual identity, creative direction and multimedia production.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-teal" tabindex="0" role="button" data-role="chinenye" aria-label="View Chinenye role details">
+        <div class="role-tag">Assistant Chief Creative Officer</div>
+        <div class="name">Chinenye</div>
+        <p>Supports the creative leadership function and contributes to ZeeFashion's visual and multimedia output.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-teal" tabindex="0" role="button" data-role="blessing" aria-label="View Blessing role details">
+        <div class="role-tag">Chief Content Officer</div>
+        <div class="name">Blessing</div>
+        <p>Owns ZeeFashion's written content, social media strategy, storytelling and content growth.</p>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- Trust, Finance & Legal (open seats) -->
+  <div class="group-block">
+    <div class="group-label"><span class="nav-dot" style="background:var(--purple-d)"></span>Trust, Finance &amp; Legal</div>
+    <div class="leader-grid">
+
+      <article class="leader-card accent-deep vacant" tabindex="0" role="button" data-role="customer" aria-label="View Customer Experience role details">
+        <div class="role-tag">Head of Customer Experience &amp; Resolution</div>
+        <div class="name">No leader yet</div>
+        <p>Owns customer support, complaints, dispute resolution and the overall customer experience.</p>
+        <span class="vacant-pill">Open role</span>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-deep vacant" tabindex="0" role="button" data-role="finance" aria-label="View Finance and Accounting role details">
+        <div class="role-tag">Finance / Accounting Lead</div>
+        <div class="name">No leader yet</div>
+        <p>Oversees financial management, accounting, budgeting, reporting and financial controls for ZeeFashion.</p>
+        <span class="vacant-pill">Open role</span>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+      <article class="leader-card accent-deep vacant" tabindex="0" role="button" data-role="legal" aria-label="View Legal and Compliance role details">
+        <div class="role-tag">Legal &amp; Compliance Lead</div>
+        <div class="name">No leader yet</div>
+        <p>Oversees legal protection, regulatory compliance, contracts, policies and business risk.</p>
+        <span class="vacant-pill">Open role</span>
+        <div class="view-role">View full role breakdown <span>&rarr;</span></div>
+      </article>
+
+    </div>
+  </div>
+
+  <footer class="colophon">
+    <p>One team, one marketplace, one vision. Each leadership function has a defined area of ownership while working together to build a trusted, scalable and customer-focused fashion marketplace. Open roles are filled deliberately, not left implied.</p>
+  </footer>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="roleModal" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <div class="modal-header">
+      <button class="close-modal" id="closeModal" aria-label="Close role details">&times;</button>
+      <div class="modal-role" id="modalRole"></div>
+      <h2 id="modalName"></h2>
+      <p id="modalSummary"></p>
+    </div>
+    <div class="modal-body">
+      <div class="detail-intro">
+        <strong>Role Purpose</strong>
+        <p id="modalPurpose"></p>
+      </div>
+      <div class="detail-grid" id="detailGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const roles = {
+  zionnite: { name:"Zionnite", role:"CEO / CTO", summary:"Leads the overall vision, strategic direction, technology, product development and long-term growth of ZeeFashion.", purpose:"Provide overall leadership for ZeeFashion while owning the company's vision, technology, product direction and major strategic decisions.", sections:[
+    ["Executive Leadership",["Set the company's vision and long-term direction","Make major strategic decisions","Align the founding leadership team around company goals","Represent ZeeFashion at high-level meetings and opportunities"]],
+    ["Technology & Product",["Own technology strategy and architecture","Oversee product development and technical roadmap","Ensure the platform is secure, reliable and scalable","Lead technical decisions and engineering priorities"]],
+    ["Business Strategy",["Define strategic priorities and growth direction","Evaluate new business opportunities","Guide fundraising and investor relationships","Work with executives to turn strategy into measurable execution"]]
+  ]},
+  ronke: { name:"Ronke", role:"Chief Operating Officer (COO)", summary:"Owns operational execution and ensures the business runs efficiently and scales sustainably.", purpose:"Turn ZeeFashion's strategic vision into coordinated, measurable day-to-day execution across teams, vendors, customers, logistics and partnerships.", sections:[
+    ["Business Operations",["Oversee daily business operations","Build efficient operational processes","Identify and remove operational bottlenecks","Ensure departments work together effectively"]],
+    ["Vendor & Artisan Operations",["Oversee artisan and vendor onboarding processes","Establish vendor operating standards","Monitor vendor performance","Handle serious vendor-related escalations"]],
+    ["Customer Operations",["Oversee customer-service operations","Ensure complaints and escalations are properly resolved","Establish operational customer-service standards","Review recurring customer problems and improve processes"]],
+    ["Logistics & Fulfillment",["Oversee logistics and fulfillment operations","Monitor delivery performance","Coordinate with the Chief Logistics Officer","Ensure fulfillment processes support customer expectations"]],
+    ["Partnerships",["Coordinate key operational partnerships","Work with logistics, payment and marketplace partners","Ensure partnerships deliver operational value","Support negotiation of operational terms"]],
+    ["Team Management",["Coordinate departmental leaders","Define responsibilities and reporting structures","Set team KPIs","Support recruitment and team development"]],
+    ["Policies & Procedures",["Develop operating policies","Establish escalation procedures","Create vendor and marketplace standards","Maintain consistent internal processes"]],
+    ["Performance & KPIs",["Monitor operational KPIs","Review fulfillment and delivery performance","Track customer and vendor performance","Identify areas requiring corrective action"]],
+    ["Growth Execution",["Turn company growth plans into operational action","Build systems that can support scale","Coordinate resources for expansion","Measure execution against growth targets"]],
+    ["Strategic Support to CEO",["Provide operational insight to the CEO","Identify operational risks","Participate in strategic decisions","Act as a key leadership partner to the CEO"]]
+  ]},
+  desire: { name:"Desire", role:"Chief Marketing Officer (CMO)", summary:"Owns marketing strategy, customer acquisition, brand growth and marketing performance.", purpose:"Make ZeeFashion discoverable, desirable and commercially successful by driving customer and artisan acquisition, marketing performance and brand growth.", sections:[
+    ["Marketing Strategy",["Develop the overall marketing strategy","Define target audiences and market segments","Set marketing objectives and KPIs","Manage marketing priorities and budget"]],
+    ["Customer Acquisition & Growth",["Develop customer acquisition strategies","Attract new artisans and designers","Improve conversion rates","Develop referral and growth initiatives"]],
+    ["Digital Marketing",["Oversee paid digital campaigns","Coordinate SEO and search marketing","Oversee email, SMS and retargeting campaigns","Measure channel performance"]],
+    ["Brand Marketing",["Strengthen ZeeFashion's market positioning","Increase brand awareness","Develop brand campaigns","Monitor public perception and brand growth"]],
+    ["Campaign Management",["Plan campaigns from concept to measurement","Define audiences, offers and channels","Coordinate creative and content teams","Optimize campaigns based on results"]],
+    ["Influencer & Creator Marketing",["Identify relevant creators and influencers","Develop creator partnerships","Manage influencer campaigns and referral codes","Track creator performance"]],
+    ["Partnerships & Promotions",["Develop marketing partnerships","Coordinate promotional campaigns","Work with communities and fashion organizations","Identify co-marketing opportunities"]],
+    ["Customer Retention",["Develop loyalty and re-engagement campaigns","Encourage repeat purchases","Use customer lifecycle marketing","Support referral and retention programs"]],
+    ["Marketing Analytics",["Track customer acquisition cost","Monitor conversion and campaign ROI","Analyze traffic and user behavior","Use data to improve marketing decisions"]],
+    ["Marketing Team",["Build and coordinate the marketing function","Set team responsibilities and KPIs","Manage marketing contributors","Develop a culture of measurable growth"]]
+  ]},
+  jubilee: { name:"Jubilee", role:"Chief Creative Officer", summary:"Leads ZeeFashion's visual identity, creative direction and multimedia production.", purpose:"Define how ZeeFashion looks, feels and expresses itself visually across campaigns, products, social platforms and brand experiences.", sections:[
+    ["Video Creation",["Develop video concepts","Plan and produce promotional videos","Create fashion and product-focused video content","Support campaign storytelling through video"]],
+    ["Video Editing",["Edit long-form and short-form video","Create platform-specific cuts","Add transitions, text, music and visual treatments","Maintain consistent editing quality"]],
+    ["Photography",["Plan and execute product and fashion shoots","Create visual assets for campaigns","Coordinate photography standards","Maintain a consistent visual style"]],
+    ["Graphics",["Create or direct marketing graphics","Develop social media visual assets","Support promotional and campaign designs","Maintain visual consistency"]],
+    ["Creative Campaigns",["Lead creative concepts for campaigns","Develop visual campaign directions","Coordinate with marketing and content teams","Ensure campaigns have strong creative execution"]],
+    ["Visual Storytelling",["Translate ZeeFashion stories into compelling visuals","Showcase artisans and designers","Build emotional visual narratives","Use visual media to strengthen brand connection"]],
+    ["Brand Aesthetics",["Maintain ZeeFashion's visual standards","Guide use of imagery, typography and design","Ensure visual consistency across channels","Evolve the brand aesthetic as ZeeFashion grows"]],
+    ["Creative Direction",["Direct creative projects","Guide creative contributors","Review visual output","Set quality standards for creative work"]],
+    ["Visual Identity",["Protect and develop ZeeFashion's visual identity","Ensure consistent brand application","Collaborate with brand and marketing leadership","Develop new visual assets when needed"]],
+    ["Short-form & Product Content",["Produce Reels and short-form videos","Create product and fashion videos","Develop social-first creative assets","Coordinate with the Content Officer on publishing needs"]]
+  ]},
+  chinenye: { name:"Chinenye", role:"Assistant Chief Creative Officer", summary:"Supports the Chief Creative Officer and contributes to ZeeFashion's visual and multimedia output.", purpose:"Support the creative leadership function by helping execute visual content, production tasks and creative campaigns to ZeeFashion's standards.", sections:[
+    ["Creative Support",["Assist the Chief Creative Officer with creative planning","Support creative production workflows","Help coordinate creative tasks and deadlines","Contribute ideas for campaigns"]],
+    ["Production",["Assist with video production","Support photography and visual shoots","Help prepare creative assets","Assist with post-production workflows"]],
+    ["Creative Campaigns",["Support campaign concepts and execution","Help produce campaign assets","Coordinate with content and marketing teams","Maintain agreed creative standards"]]
+  ]},
+  blessing: { name:"Blessing", role:"Chief Content Officer", summary:"Owns ZeeFashion's written content, social media strategy, storytelling and content growth.", purpose:"Build ZeeFashion's voice and audience through strategic content, social media, storytelling, community engagement and content-led growth.", sections:[
+    ["Blog & Articles",["Plan and publish ZeeFashion articles","Develop fashion and marketplace stories","Create educational and editorial content","Maintain a consistent publishing schedule"]],
+    ["Social Media Strategy",["Develop social media strategy","Manage platform-specific content direction","Coordinate Instagram, Facebook, TikTok, X and LinkedIn content","Monitor audience engagement"]],
+    ["Content Calendar",["Build and maintain content calendars","Coordinate campaigns and publishing dates","Align content with marketing priorities","Ensure consistent publishing"]],
+    ["Captions & Copywriting",["Write social captions","Develop campaign copy","Maintain ZeeFashion's written voice","Create compelling calls to action"]],
+    ["Community Engagement",["Engage customers and followers","Respond to community conversations","Identify audience interests","Build a strong ZeeFashion community"]],
+    ["Social Campaigns",["Coordinate social media campaigns","Work with marketing on campaign messaging","Track social performance","Optimize content based on engagement"]],
+    ["Fashion & Artisan Stories",["Create fashion and trend content","Tell artisan and designer stories","Highlight marketplace products and creators","Develop editorial series around Nigerian fashion"]],
+    ["SEO Content",["Develop SEO-focused articles","Target relevant search topics","Improve organic content visibility","Work with SEO priorities and analytics"]],
+    ["Content Analytics & Growth",["Track content performance","Monitor reach and engagement","Identify high-performing topics","Use analytics to improve content strategy"]],
+    ["Creative Coordination",["Coordinate with the Chief Creative Officer","Translate content ideas into visual requirements","Plan video and graphic needs","Ensure creative assets support the content strategy"]]
+  ]},
+  stella: { name:"Stella", role:"Chief Logistics Officer", summary:"Owns logistics strategy, fulfillment coordination and delivery performance across ZeeFashion.", purpose:"Ensure orders move reliably from vendor to customer by managing logistics partners, fulfillment processes, delivery performance and logistics strategy.", sections:[
+    ["Logistics Partners",["Manage relationships with logistics providers","Monitor partner performance","Coordinate operational requirements","Identify and evaluate logistics partners"]],
+    ["Delivery Rates",["Negotiate delivery rates","Review pricing and service levels","Seek cost-efficient delivery options","Monitor rate changes"]],
+    ["Pickups & Fulfillment",["Coordinate vendor pickups","Monitor fulfillment readiness","Ensure orders move through the delivery process","Work with vendors on fulfillment issues"]],
+    ["Delivery Tracking",["Monitor active deliveries","Track delayed or exceptional shipments","Maintain visibility across delivery stages","Coordinate customer and vendor updates"]],
+    ["Delayed / Lost Orders",["Investigate delayed or lost deliveries","Coordinate resolution with logistics partners","Escalate serious incidents","Document recurring delivery problems"]],
+    ["Delivery Escalations",["Manage major delivery escalations","Coordinate with customer experience","Work with vendors and logistics partners","Ensure timely resolution"]],
+    ["Logistics KPIs",["Track successful delivery rate","Monitor delivery time and delays","Review cancellation and exception rates","Report logistics performance"]],
+    ["Artisan & Customer Coordination",["Coordinate delivery expectations","Communicate operational requirements","Support resolution of fulfillment issues","Maintain alignment between vendors and customers"]],
+    ["Logistics Integrations",["Work with Eziza and other logistics integrations","Support operational integration requirements","Monitor integration performance","Identify opportunities for automation"]],
+    ["Logistics Strategy",["Develop ZeeFashion's logistics strategy","Improve delivery reliability","Identify opportunities to reduce delivery friction","Plan for geographic expansion"]]
+  ]},
+  customer: { name:"No leader yet", role:"Head of Customer Experience & Resolution", summary:"Owns customer support, complaints, dispute resolution and the overall customer experience.", purpose:"Ensure every customer receives responsive support and fair, efficient resolution when issues arise before, during or after a transaction.", sections:[
+    ["Customer Support",["Respond to customer questions","Guide customers through marketplace processes","Provide timely and accurate support","Maintain professional communication standards"]],
+    ["Customer Complaints",["Receive and investigate complaints","Categorize recurring complaints","Coordinate with relevant departments","Ensure complaints reach resolution"]],
+    ["Order-related Issues",["Handle order problems","Coordinate with vendors and logistics","Provide customers with status updates","Resolve fulfillment-related issues"]],
+    ["Vendor / Customer Disputes",["Receive and investigate disputes","Gather relevant evidence","Apply ZeeFashion's dispute policies","Escalate complex cases when necessary"]],
+    ["Refunds, Returns & Cancellations",["Process and coordinate refund requests","Manage return-related cases","Handle cancellation requests","Ensure decisions follow company policies"]],
+    ["Escalations",["Manage high-priority cases","Escalate sensitive cases to the COO or CEO where appropriate","Track escalated cases through resolution","Document outcomes"]],
+    ["Customer Satisfaction",["Monitor customer satisfaction","Identify friction points","Develop service improvements","Track customer experience metrics"]],
+    ["Customer Feedback",["Collect customer feedback","Identify product and service improvements","Share recurring insights with leadership","Close the feedback loop where appropriate"]],
+    ["Resolution Policies",["Develop customer resolution procedures","Improve dispute workflows","Maintain consistent service standards","Recommend policy changes based on recurring issues"]],
+    ["Customer Communication",["Maintain clear customer communication","Develop service-response standards","Coordinate customer announcements when required","Ensure customers understand resolutions"]],
+    ["Cross-functional Resolution",["Work with artisans to resolve issues","Coordinate with logistics partners","Work with operations and marketing when needed","Ensure customers are not passed unnecessarily between teams"]]
+  ]},
+  silver: { name:"Silver", role:"Public Relations (PR) Lead", summary:"Manages ZeeFashion's public image, media relationships, reputation and external communications.", purpose:"Build and protect ZeeFashion's public reputation while increasing media visibility, credibility, industry recognition and positive public awareness.", sections:[
+    ["PR Strategy",["Develop ZeeFashion's public relations strategy","Set PR objectives and measurable outcomes","Identify key audiences and stakeholders","Align PR activities with business and brand goals"]],
+    ["Media & Press Relations",["Build relationships with journalists and media organizations","Identify relevant media opportunities","Pitch ZeeFashion stories to appropriate publications","Maintain a professional media contact database"]],
+    ["Press Releases",["Draft and coordinate press releases","Announce major ZeeFashion milestones","Prepare company statements and official announcements","Coordinate approvals before public release"]],
+    ["Media Opportunities",["Identify interview opportunities","Coordinate media appearances","Prepare leadership for interviews","Secure relevant features and mentions"]],
+    ["Brand Reputation",["Monitor ZeeFashion's public reputation","Track public perception and sentiment","Identify potential reputation risks","Recommend actions to protect brand trust"]],
+    ["Crisis Communication",["Develop crisis communication procedures","Coordinate public responses during sensitive situations","Prepare official statements when necessary","Work with the CEO and relevant leadership during reputational issues"]],
+    ["Events & Public Visibility",["Coordinate PR around ZeeFashion events","Support fashion exhibitions and industry events","Coordinate media invitations","Increase ZeeFashion's presence in relevant communities"]],
+    ["Industry & Stakeholder Relations",["Build relationships with fashion organizations","Engage industry leaders and relevant communities","Support strategic external relationships","Identify opportunities for industry recognition"]],
+    ["Influencer & Public Figure Relations",["Build relationships with relevant public figures","Coordinate PR-focused influencer opportunities","Support celebrity and creator appearances","Ensure external personalities align with ZeeFashion's reputation"]],
+    ["PR Reporting",["Track media mentions","Measure PR reach and visibility","Report important media opportunities and outcomes","Monitor PR performance against objectives"]],
+    ["Coordination with Marketing & Content",["Work with the CMO on brand visibility","Coordinate with the Chief Content Officer on public-facing content","Work with the Chief Creative Officer on PR assets","Ensure public messaging remains consistent across channels"]]
+  ]},
+  finance: { name:"No leader yet", role:"Finance / Accounting Lead", summary:"Oversees financial management, accounting, budgeting, reporting and financial controls for ZeeFashion.", purpose:"Maintain accurate financial records, protect ZeeFashion's financial health and provide leadership with reliable financial information for decision-making.", sections:[
+    ["Financial Management",["Monitor the financial health of ZeeFashion","Maintain accurate financial records","Track revenue, expenses and cash position","Provide financial insights to leadership"]],
+    ["Bookkeeping & Accounting",["Maintain accounting records","Record business transactions","Reconcile financial accounts","Ensure financial documentation is properly maintained"]],
+    ["Budgeting & Forecasting",["Prepare operating budgets","Develop financial forecasts","Track actual performance against budgets","Identify potential funding or cash-flow gaps"]],
+    ["Financial Reporting",["Prepare monthly and periodic financial reports","Provide management accounts","Track revenue and expenditure trends","Prepare financial information for investors and stakeholders"]],
+    ["Cash Flow Management",["Monitor cash inflows and outflows","Maintain cash-flow forecasts","Identify upcoming financial obligations","Support effective cash management"]],
+    ["Revenue & Expense Tracking",["Track marketplace revenue","Monitor commissions and subscriptions","Track operating expenses","Identify unusual or unnecessary expenses"]],
+    ["Payments & Reconciliation",["Coordinate vendor and partner payments","Monitor payment transactions","Reconcile payment platforms and bank accounts","Investigate financial discrepancies"]],
+    ["Tax & Statutory Obligations",["Monitor applicable tax obligations","Coordinate statutory financial requirements","Maintain relevant financial documentation","Work with qualified accountants or tax professionals"]],
+    ["Financial Controls",["Establish financial approval procedures","Reduce financial errors and unauthorized spending","Maintain appropriate records","Support internal financial accountability"]],
+    ["Grant & Investor Reporting",["Prepare financial information for grants","Support investor reporting","Track use of restricted funding","Maintain documentation for financial due diligence"]],
+    ["Audits & External Accountants",["Coordinate external accounting support","Prepare records for audits","Respond to financial information requests","Ensure financial records remain audit-ready"]]
+  ]},
+  legal: { name:"No leader yet", role:"Legal & Compliance Lead", summary:"Oversees legal protection, regulatory compliance, contracts, policies and business risk.", purpose:"Protect ZeeFashion from legal and regulatory risks while ensuring that the marketplace, company operations and relationships comply with applicable laws and contractual obligations.", sections:[
+    ["Legal & Regulatory Compliance",["Monitor relevant laws and regulations","Identify legal and regulatory obligations","Coordinate compliance requirements across departments","Escalate significant legal risks to leadership"]],
+    ["Business Contracts",["Review company contracts","Draft or coordinate agreements","Ensure contracts protect ZeeFashion's interests","Maintain contract records and renewal dates"]],
+    ["Vendor & Artisan Agreements",["Review vendor and artisan agreements","Define contractual responsibilities","Ensure marketplace terms are clearly documented","Support resolution of contractual disputes"]],
+    ["Partnership Agreements",["Review logistics and technology partnership agreements","Support negotiation of contractual terms","Identify commercial and legal risks","Maintain partnership documentation"]],
+    ["Employment & Contractor Agreements",["Support employment documentation","Review contractor agreements","Ensure responsibilities and obligations are documented","Coordinate with external counsel when necessary"]],
+    ["Terms & Marketplace Policies",["Maintain Terms & Conditions","Review marketplace policies","Ensure customer and vendor rules are clearly documented","Review policies as the marketplace evolves"]],
+    ["Privacy & Data Protection",["Review privacy policies","Support data protection compliance","Coordinate with technology leadership on data-related obligations","Monitor appropriate handling of customer and vendor information"]],
+    ["Consumer Protection",["Review customer-facing policies","Support fair marketplace practices","Monitor refund, return and dispute policies","Coordinate with Customer Experience on legal requirements"]],
+    ["Intellectual Property",["Protect ZeeFashion's intellectual property","Review brand and content usage rights","Support trademark and intellectual-property matters","Address unauthorized use of company assets"]],
+    ["Corporate Governance",["Maintain corporate compliance records","Support board and shareholder documentation","Monitor statutory corporate obligations","Coordinate with relevant professional advisers"]],
+    ["Legal Risk Management",["Identify potential legal risks","Maintain a legal-risk register","Recommend preventive measures","Escalate material legal issues to the CEO"]],
+    ["External Legal Counsel",["Coordinate with external lawyers where specialist advice is needed","Manage legal consultations","Support litigation or dispute matters","Ensure external legal advice is properly documented"]]
+  ]}
+};
+
+const modal = document.getElementById("roleModal");
+const modalName = document.getElementById("modalName");
+const modalRole = document.getElementById("modalRole");
+const modalSummary = document.getElementById("modalSummary");
+const modalPurpose = document.getElementById("modalPurpose");
+const detailGrid = document.getElementById("detailGrid");
+const closeModal = document.getElementById("closeModal");
+
+function openRole(key) {
+  const data = roles[key];
+  if (!data) return;
+  modalName.textContent = data.name;
+  modalRole.textContent = data.role;
+  modalSummary.textContent = data.summary;
+  modalPurpose.textContent = data.purpose;
+  detailGrid.innerHTML = data.sections.map(section => `
+    <section class="detail-section">
+      <h3>${section[0]}</h3>
+      <ul>${section[1].map(item => `<li>${item}</li>`).join("")}</ul>
+    </section>
+  `).join("");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  closeModal.focus();
+}
+
+function closeRole() {
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+document.querySelectorAll("[data-role]").forEach(el => {
+  el.addEventListener("click", e => {
+    if (e.target.closest(".close-modal")) return;
+    openRole(el.dataset.role);
+  });
+  el.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openRole(el.dataset.role);
+    }
+  });
+});
+
+closeModal.addEventListener("click", closeRole);
+modal.addEventListener("click", e => { if (e.target === modal) closeRole(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeRole(); });
+</script>
